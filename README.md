@@ -38,6 +38,10 @@ If browser storage is unavailable, play continues in memory and a notice explain
 
 PNG exports preserve the picture rather than playable progress. On iPad, touch and hold the export preview to save to Photos when the download flow is inconvenient. Internet is required to launch; no offline cache or cloud sync is included.
 
+Install from the published HTTPS site: on iPad, open Safari's Share menu and choose **Add to Home Screen** (leave **Open as Web App** enabled if shown). In Chrome, use the address-bar install icon or the menu's **Install Nail Salon** / **Install page as app** option. The installed game opens in its own window, supports both orientations, and uses the same site's local storage; some platforms keep Home Screen storage separate from browser tabs. No cloud transfer is included. Older Home Screen shortcuts may need to be removed and added again to pick up standalone mode and the new icon.
+
+The relative `manifest.webmanifest` scopes installation to the deployed game directory, including GitHub Pages. PNG icons at 180, 192, and 512 pixels are bundled; regenerate them from the original SVG with `node scripts/generate-icons.mjs`. Installation does not add offline launching.
+
 ## Development and checks
 
 ```sh

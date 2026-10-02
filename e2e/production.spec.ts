@@ -14,6 +14,15 @@ test.beforeAll(async () => {
     body: await readFile(resolve('dist/favicon.svg')),
     type: 'image/svg+xml',
   });
+  files.set('/NailSalonGame/manifest.webmanifest', {
+    body: await readFile(resolve('dist/manifest.webmanifest')),
+    type: 'application/manifest+json',
+  });
+  for (const name of await readdir(resolve('dist/icons')))
+    files.set(`/NailSalonGame/icons/${name}`, {
+      body: await readFile(resolve('dist/icons', name)),
+      type: 'image/png',
+    });
   for (const name of await readdir(resolve('dist/assets')))
     files.set(`/NailSalonGame/assets/${name}`, {
       body: await readFile(resolve('dist/assets', name)),
@@ -65,4 +74,53 @@ test('production game loads inside an arcade iframe', async ({ page }) => {
   const game = page.frameLocator('iframe');
   await game.getByRole('button', { name: 'Let’s create!' }).click();
   await expect(game.getByRole('button', { name: 'All done!' })).toBeVisible();
+});
+
+test('installed app metadata and icons resolve within the Pages subdirectory', async ({
+  page,
+  browserName,
+}) => {
+  await page.goto(`${origin}/NailSalonGame/`);
+  const manifestUrl = await page
+    .locator('link[rel="manifest"]')
+    .evaluate((link) => (link as HTMLLinkElement).href);
+  const response = await page.request.get(manifestUrl);
+  expect(response.ok()).toBe(true);
+  const manifest = await response.json();
+  expect(manifest.display).toBe('standalone');
+  expect(manifest.name).toBe('Nail Salon');
+  expect(manifest.prefer_related_applications).toBe(false);
+  for (const key of ['start_url', 'scope', 'id'])
+    expect(new URL(manifest[key], manifestUrl).href).toBe(`${origin}/NailSalonGame/`);
+  expect(manifest.icons.map((icon: { sizes: string }) => icon.sizes)).toEqual([
+    '192x192',
+    '512x512',
+    '512x512',
+  ]);
+  for (const icon of manifest.icons) {
+    const url = new URL(icon.src, manifestUrl).href;
+    expect(url.startsWith(`${origin}/NailSalonGame/icons/`)).toBe(true);
+    const size = await page.evaluate(async (url) => {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      return `${image.naturalWidth}x${image.naturalHeight}`;
+    }, url);
+    expect(size).toBe(icon.sizes);
+  }
+  await expect(page.locator('meta[name="apple-mobile-web-app-capable"]')).toHaveAttribute(
+    'content',
+    'yes',
+  );
+  const appleUrl = await page
+    .locator('link[rel="apple-touch-icon"]')
+    .evaluate((link) => (link as HTMLLinkElement).href);
+  expect((await page.request.get(appleUrl)).ok()).toBe(true);
+  if (browserName === 'chromium') {
+    const session = await page.context().newCDPSession(page);
+    const parsed = await session.send('Page.getAppManifest');
+    expect(parsed.errors).toEqual([]);
+    expect(parsed.url).toBe(manifestUrl);
+    await session.detach();
+  }
 });
