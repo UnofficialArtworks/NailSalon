@@ -3,6 +3,7 @@ import { COLORS, suppliesAt } from '../game/catalog';
 import { STENCILS, stencilPath, fillStencil, dipMarble } from '../game/creative';
 import type { Nail, StencilId } from '../game/types';
 import { NailCanvas } from './NailCanvas';
+import { PolishPicker } from './PolishPicker';
 
 export function CreativePaint({
   nail,
@@ -98,20 +99,10 @@ export function CreativePaint({
           <div className="marble-controls">
             <p>Pick two colors, swirl, then dip your nail!</p>
             <small>First color: {COLORS.find((c) => c.id === color)?.name} · choose above</small>
-            <label>
-              Second color{' '}
-              <select
-                aria-label="Marble second color"
-                value={accent}
-                onChange={(e) => setAccent(e.target.value)}
-              >
-                {kit.colors.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+            <div className="marble-second-color">
+              <span>Second color</span>
+              <PolishPicker colors={kit.colors} selected={accent} choose={setAccent} />
+            </div>
             <div className="action-pair">
               <button onClick={() => setVariant((v) => (v + 1) % 4)}>Swirl colors ↻</button>
               <button onClick={() => edit(dipMarble(nail, color, accent, variant))}>

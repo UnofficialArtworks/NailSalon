@@ -92,22 +92,92 @@
   flex: 1;
   min-width: 0;
 }
-.marble-controls label {
+.marble-second-color {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
   margin: 8px 0;
 }
-.marble-controls select {
+.polish-picker {
+  position: relative;
+  width: min(100%, 300px);
+}
+.polish-picker-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  background: linear-gradient(#fff, #fbe4ff);
+}
+.polish-dot {
+  display: inline-block;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px #7f498a44,
+    inset 0 -3px 0 #00000012;
+  position: relative;
+}
+.polish-dot::after {
+  content: '';
+  position: absolute;
+  width: 7px;
+  height: 5px;
+  top: 4px;
+  left: 5px;
+  border-radius: 50%;
+  background: #ffffffaa;
+  transform: rotate(-35deg);
+}
+.polish-picker-chevron {
+  margin-left: auto;
+  font-size: 20px;
+  color: #bb48b0;
+}
+.polish-picker-panel {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 40;
+  padding: 10px;
+  border: 2px solid #d48bea;
+  border-radius: 20px;
+  background: linear-gradient(#fff9fd, #f9e1ff);
+  box-shadow: 0 8px 22px #7c398c33;
+}
+.polish-picker-panel > strong {
+  display: block;
+  margin: 2px 4px 8px;
+  font-size: 13px;
+}
+.polish-picker-colors {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 3px;
+}
+.polish-picker-colors button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
   min-height: 48px;
-  max-width: 100%;
-  border: 2px solid #d79bea;
-  border-radius: 14px;
-  padding: 8px;
-  color: #623479;
-  background: white;
-  font: inherit;
+  text-align: left;
+  font-size: 13px;
+  padding: 7px 10px;
+}
+.polish-picker-check {
+  margin-left: auto;
+  color: #8c3291;
 }
 @media (max-width: 480px) {
   .creative-paint-tabs button {

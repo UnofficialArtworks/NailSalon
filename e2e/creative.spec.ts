@@ -63,7 +63,8 @@ test('marble bowl swirls, dips and persists through gallery and PNG', async ({ p
   test.setTimeout(60000);
   await start(page);
   await page.getByRole('button', { name: 'Marble dip', exact: true }).click();
-  await page.getByLabel('Marble second color').selectOption('color-6');
+  await page.getByRole('button', { name: 'Marble second color: Sky blue', exact: true }).click();
+  await page.getByRole('button', { name: 'Marble color: Lavender', exact: true }).click();
   await page.getByRole('button', { name: 'Swirl colors' }).click();
   await page.getByRole('button', { name: 'Dip this nail' }).click();
   await expect
@@ -109,6 +110,37 @@ test('starter inspiration suggests unlocked supplies without changing the manicu
   );
   expect((await saved(page)).active).toEqual(before);
   expect((await saved(page)).stars).toBe(0);
+});
+
+test('marble color picker shows named swatches, supports keyboard dismissal and fits phones', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await start(page);
+  await page.getByRole('button', { name: 'Marble dip', exact: true }).click();
+  const trigger = page.getByRole('button', { name: 'Marble second color: Sky blue', exact: true });
+  await trigger.click();
+  const palette = page.getByRole('group', { name: 'Choose your marble second color' });
+  await expect(palette).toBeVisible();
+  const sky = palette.getByRole('button', { name: 'Marble color: Sky blue', exact: true });
+  await expect(sky).toBeFocused();
+  await expect(sky.locator('.polish-dot')).toHaveCSS('background-color', 'rgb(132, 204, 236)');
+  const bounds = (await palette.boundingBox())!;
+  expect(bounds.x).toBeGreaterThanOrEqual(0);
+  expect(bounds.x + bounds.width).toBeLessThanOrEqual(390);
+  expect((await sky.boundingBox())!.height).toBeGreaterThanOrEqual(48);
+  await expect(palette.getByRole('button')).toHaveCount(18);
+  await page.keyboard.press('Escape');
+  await expect(palette).toHaveCount(0);
+  await expect(trigger).toBeFocused();
+  await trigger.click();
+  await palette.getByRole('button', { name: 'Marble color: Cherry pop', exact: true }).click();
+  const chosen = page.getByRole('button', { name: 'Marble second color: Cherry pop', exact: true });
+  await expect(chosen.locator('.polish-dot')).toHaveCSS('background-color', 'rgb(233, 79, 109)');
+  await expect(palette).toHaveCount(0);
+  await chosen.click();
+  await page.getByRole('button', { name: 'Swirl colors' }).click();
+  await expect(palette).toHaveCount(0);
 });
 
 test('stencil masks and marble render consistently, including matte and exported pixels', async ({

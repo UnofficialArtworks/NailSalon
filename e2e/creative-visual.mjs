@@ -29,6 +29,16 @@ try {
       path: `test-results/visual/creative-marble-${name}.png`,
       fullPage: true,
     });
+    await page.getByRole('button', { name: 'Marble second color: Sky blue', exact: true }).click();
+    await page.mouse.move(0, 0);
+    await page
+      .getByRole('group', { name: 'Choose your marble second color' })
+      .screenshot({ path: `test-results/visual/creative-picker-${name}.png` });
+    await page.screenshot({
+      path: `test-results/visual/creative-picker-${name}-context.png`,
+      fullPage: true,
+    });
+    await page.keyboard.press('Escape');
     if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 1))
       throw new Error(`Overflow: ${name}`);
   }
