@@ -90,8 +90,11 @@ test('installed app metadata and icons resolve within the Pages subdirectory', a
   expect(manifest.display).toBe('standalone');
   expect(manifest.name).toBe('Nail Salon');
   expect(manifest.prefer_related_applications).toBe(false);
-  for (const key of ['start_url', 'scope', 'id'])
+  for (const key of ['start_url', 'scope'])
     expect(new URL(manifest[key], manifestUrl).href).toBe(`${origin}/NailSalonGame/`);
+  // The browser resolves id against the origin, not the manifest directory.
+  expect(new URL(manifest.id, origin).href).toBe(`${origin}/NailSalon/`);
+  expect(new URL(manifest.id, origin).href).not.toBe(`${origin}/`);
   expect(manifest.icons.map((icon: { sizes: string }) => icon.sizes)).toEqual([
     '192x192',
     '512x512',
@@ -121,6 +124,7 @@ test('installed app metadata and icons resolve within the Pages subdirectory', a
     const parsed = await session.send('Page.getAppManifest');
     expect(parsed.errors).toEqual([]);
     expect(parsed.url).toBe(manifestUrl);
+    expect(parsed.manifest.id).toBe(`${origin}/NailSalon/`);
     await session.detach();
   }
 });

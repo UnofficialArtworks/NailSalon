@@ -40,7 +40,9 @@ PNG exports preserve the picture rather than playable progress. On iPad, touch a
 
 Install from the published HTTPS site: on iPad, open Safari's Share menu and choose **Add to Home Screen** (leave **Open as Web App** enabled if shown). In Chrome, use the address-bar install icon or the menu's **Install Nail Salon** / **Install page as app** option. The installed game opens in its own window, supports both orientations, and uses the same site's local storage; some platforms keep Home Screen storage separate from browser tabs. No cloud transfer is included. Older Home Screen shortcuts may need to be removed and added again to pick up standalone mode and the new icon.
 
-The relative `manifest.webmanifest` scopes installation to the deployed game directory, including GitHub Pages. PNG icons at 180, 192, and 512 pixels are bundled; regenerate them from the original SVG with `node scripts/generate-icons.mjs`. Installation does not add offline launching.
+The relative `manifest.webmanifest` scopes installation to the deployed game directory, including GitHub Pages. Its stable `/NailSalon/` identity distinguishes this game from other games on the same origin. Unlike launch and scope URLs, a manifest `id` resolves against the origin; using `./` would give every game the same root identity. PNG icons at 180, 192, and 512 pixels are bundled; regenerate them from the original SVG with `node scripts/generate-icons.mjs`. Installation does not add offline launching.
+
+Chrome decides when to show automatic install promotion; a pop-up is not guaranteed. If Chrome previously associated this game with Aquarium because of the old shared identity, reload the published page and install Nail Salon separately. If an old installed shortcut remains mislabeled, remove that shortcut and reinstall the intended game. Keep any option to delete site data unchecked, since both games save progress locally on the same origin.
 
 ## Development and checks
 
