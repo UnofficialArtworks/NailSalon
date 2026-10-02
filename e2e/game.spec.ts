@@ -99,11 +99,31 @@ test('decorations can be selected, rotated, and removed without dragging', async
   await welcome(page);
   await page.getByRole('button', { name: 'Stickers', exact: true }).click();
   await page.getByRole('button', { name: 'Place in the middle' }).click();
+  await expect(page.getByRole('button', { name: 'Make decoration bigger' })).toBeEnabled();
+  await page.getByRole('button', { name: 'Make decoration bigger' }).click();
+  await expect
+    .poll(async () => {
+      const active = (await saved(page)).active as { nails: { decorations: { size: number }[] }[] };
+      return active.nails[0].decorations[0].size;
+    })
+    .toBeCloseTo(0.32);
   await page.getByRole('button', { name: 'Move', exact: true }).click();
   await page.getByRole('button', { name: 'Item 1' }).click();
   await page.getByRole('button', { name: 'Rotate', exact: false }).click();
   await page.getByRole('button', { name: 'Remove item', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Item 1' })).toHaveCount(0);
+});
+
+test('switching tools remembers the chosen sticker', async ({ page }) => {
+  await welcome(page);
+  await page.getByRole('button', { name: 'Stickers', exact: true }).click();
+  await page.getByRole('button', { name: 'Butterfly', exact: true }).click();
+  await page.getByRole('button', { name: 'Gems', exact: true }).click();
+  await page.getByRole('button', { name: 'Stickers', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Butterfly', exact: true })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  );
 });
 test('portrait, landscape, phone, and iframe layouts do not overflow', async ({ page }) => {
   await welcome(page);

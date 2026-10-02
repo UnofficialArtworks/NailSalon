@@ -8,7 +8,7 @@ export function Icon({ id, size = 32 }: { id: string; size?: number }) {
           d={l.path}
           fill={l.fill}
           stroke={l.stroke}
-          strokeWidth="3"
+          strokeWidth={l.strokeWidth ?? 3}
           strokeLinecap="round"
           strokeLinejoin="round"
         />

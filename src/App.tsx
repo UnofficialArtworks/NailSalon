@@ -86,6 +86,8 @@ export default function App() {
     sound('paint');
   }
   function editNail(n: Nail) {
+    const added = n.decorations.find((d) => !nail.decorations.some((old) => old.id === d.id));
+    if (added) setSelectedDecoration(added.id);
     editNails(m.nails.map((old, i) => (i === selectedNail ? n : old)));
   }
   function historyAction(action: 'undo' | 'redo') {
@@ -539,9 +541,6 @@ export default function App() {
             setTool(t);
             if (!zoom) {
               setZoom(true);
-              setToast(
-                `Nail ${selectedNail + 1} is ready. Use the numbered buttons to switch nails.`,
-              );
             }
           }}
           color={color}

@@ -139,7 +139,14 @@ export function NailCanvas({
       moveId =
         [...next.decorations]
           .reverse()
-          .find((d) => Math.hypot(d.x - p.x, d.y - p.y) < d.size * 0.65)?.id ?? null;
+          .find(
+            (d) =>
+              Math.hypot(
+                d.x - p.x,
+                ((d.y - p.y) * e.currentTarget.height) / e.currentTarget.width,
+              ) <
+              d.size * 0.65,
+          )?.id ?? null;
       onSelect?.(moveId);
       if (!moveId) return;
     }

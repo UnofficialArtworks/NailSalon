@@ -20,6 +20,8 @@ The hand uses fixed artwork bounds with separate 48-pixel touch targets, prevent
 
 The revised hand has slender, separated fingers and a right-side thumb, with soft side shading and restrained knuckle lines. The close-up uses the same proportions, with the nail near the fingertip. The overview scales to the desk height so fingertips remain reachable on short screens, and PNG exports preserve the hand's aspect ratio. Nail numbers and saved artwork stay compatible.
 
+Sticker artwork uses layered original vector illustrations with consistent outlines and highlights. Decorations correct for the nail canvas aspect ratio before rotation, so stickers and gems retain their proportions in painting, thumbnails, and exports. Picking a tool remembers its last supply during the session. New decorations are selected automatically and can be resized, rotated, or removed with buttons. The sticker sheet and decorated desktop/tablet/phone views can be recreated with `node e2e/audit.mjs`.
+
 ## Quality boundaries
 
 Always retain recoverable artwork, validate persisted data, keep touch targets at least 48 CSS pixels, support reduced motion, and use local assets. Test behavior with Vitest and complete flows in Playwright. Run checks before publishing. Never silently reset saves, discard gallery entries, duplicate customer rewards, suppress errors to make tests pass, or upload personal game data.

@@ -39,7 +39,7 @@ export function drawIcon(
     }
     if (layer.stroke) {
       ctx.strokeStyle = layer.stroke;
-      ctx.lineWidth = 3;
+      ctx.lineWidth = layer.strokeWidth ?? 3;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
       ctx.stroke(path);
@@ -47,9 +47,10 @@ export function drawIcon(
   }
   ctx.restore();
 }
-export function drawDecoration(ctx: CanvasRenderingContext2D, d: Decoration) {
+export function drawDecoration(ctx: CanvasRenderingContext2D, d: Decoration, aspect = 1) {
   ctx.save();
   ctx.translate(d.x, d.y);
+  ctx.scale(1, aspect);
   ctx.rotate((d.rotation * Math.PI) / 180);
   if (d.kind === 'sticker') drawIcon(ctx, d.supplyId, 0, 0, d.size);
   else {
@@ -156,7 +157,7 @@ export function renderNail(
     }
   }
   if (nail.patternId) pattern(ctx, nail.patternId);
-  for (const d of nail.decorations) drawDecoration(ctx, d);
+  for (const d of nail.decorations) drawDecoration(ctx, d, width / height);
   if (!nail.cleaned && !nail.baseColorId && nail.strokes.length === 0) {
     ctx.fillStyle = '#bc927966';
     for (let i = 0; i < 5; i++) {
@@ -186,15 +187,15 @@ export function renderNail(
   ctx.stroke(outline);
   const d = nail.decorations.find((d) => d.id === selected);
   if (d) {
+    ctx.save();
+    ctx.translate(d.x, d.y);
+    ctx.scale(1, width / height);
+    ctx.rotate((d.rotation * Math.PI) / 180);
     ctx.strokeStyle = '#60415e';
     ctx.lineWidth = 0.008;
     ctx.setLineDash([0.025, 0.018]);
-    ctx.strokeRect(
-      d.x - d.size / 2 - 0.015,
-      d.y - d.size / 2 - 0.015,
-      d.size + 0.03,
-      d.size + 0.03,
-    );
+    ctx.strokeRect(-d.size / 2 - 0.015, -d.size / 2 - 0.015, d.size + 0.03, d.size + 0.03);
+    ctx.restore();
   }
   ctx.restore();
 }
@@ -234,8 +235,8 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
     const b = NAIL_BOXES[i];
     const tile = document.createElement('canvas');
     tile.width = 240;
-    tile.height = 320;
-    renderNail(tile.getContext('2d')!, n, 240, 320);
+    tile.height = Math.round((240 * b.h) / b.w);
+    renderNail(tile.getContext('2d')!, n, tile.width, tile.height);
     ctx.save();
     ctx.translate(b.x + b.w / 2, b.y + b.h / 2);
     ctx.rotate((b.r * Math.PI) / 180);

@@ -1059,6 +1059,7 @@ h3 {
   color: #a28b96;
 }
 .toast {
+  pointer-events: none;
   position: fixed;
   z-index: 100;
   bottom: 24px;

@@ -4,6 +4,7 @@ import { Icon, Bottle } from './Icon';
 import { uid } from '../game/rules';
 import { ToolPicture } from './ToolPicture';
 import { NailCanvas } from './NailCanvas';
+import { useRef } from 'react';
 interface Props {
   stars: number;
   tool: Tool;
@@ -36,6 +37,7 @@ const tools: { id: Tool; name: string }[] = [
   { id: 'move', name: 'Move' },
 ];
 export function ToolRack(p: Props) {
+  const remembered = useRef<Record<string, string>>({});
   const kit = suppliesAt(p.stars);
   const library = p.tool === 'pattern' ? PATTERNS : p.tool === 'sticker' ? STICKERS : GEMS;
   const unlocked =
@@ -49,10 +51,11 @@ export function ToolRack(p: Props) {
             className={p.tool === t.id ? 'active' : ''}
             aria-pressed={p.tool === t.id}
             onClick={() => {
+              remembered.current[p.tool] = p.supply;
               p.setTool(t.id);
-              if (t.id === 'pattern') p.setSupply(kit.patterns[0].id);
-              if (t.id === 'sticker') p.setSupply(kit.stickers[0].id);
-              if (t.id === 'gem') p.setSupply(kit.gems[0].id);
+              if (t.id === 'pattern') p.setSupply(remembered.current[t.id] ?? kit.patterns[0].id);
+              if (t.id === 'sticker') p.setSupply(remembered.current[t.id] ?? kit.stickers[0].id);
+              if (t.id === 'gem') p.setSupply(remembered.current[t.id] ?? kit.gems[0].id);
             }}
           >
             <ToolPicture tool={t.id} />
@@ -262,6 +265,34 @@ export function ToolRack(p: Props) {
         )}
         {(p.selected || p.nail.decorations.length > 0) && (
           <div className="action-pair">
+            <button
+              disabled={!p.selected}
+              aria-label="Make decoration smaller"
+              onClick={() =>
+                p.edit({
+                  ...p.nail,
+                  decorations: p.nail.decorations.map((d) =>
+                    d.id === p.selected ? { ...d, size: Math.max(0.1, d.size - 0.04) } : d,
+                  ),
+                })
+              }
+            >
+              − Smaller
+            </button>
+            <button
+              disabled={!p.selected}
+              aria-label="Make decoration bigger"
+              onClick={() =>
+                p.edit({
+                  ...p.nail,
+                  decorations: p.nail.decorations.map((d) =>
+                    d.id === p.selected ? { ...d, size: Math.min(0.65, d.size + 0.04) } : d,
+                  ),
+                })
+              }
+            >
+              + Bigger
+            </button>
             <button disabled={!p.selected} onClick={p.rotate}>
               ↻ Rotate
             </button>
