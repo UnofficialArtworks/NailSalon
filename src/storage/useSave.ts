@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { createSave } from '../game/rules';
 import type { Save } from '../game/types';
 import { openDatabase, loadSave, writeSave, recoverSave, type LoadResult } from './database';
+import { createSaveWriter } from './saveWriter';
 export function useSave() {
   const [save, setSave] = useState<Save>(createSave),
     [ready, setReady] = useState(false),
@@ -10,18 +11,10 @@ export function useSave() {
   const db = useRef<IDBDatabase | null>(null),
     latest = useRef(save),
     writable = useRef(false),
-    queue = useRef(Promise.resolve());
+    writer = useRef<ReturnType<typeof createSaveWriter> | null>(null);
   latest.current = save;
   function persist(value: Save) {
-    const database = db.current;
-    if (!database || !writable.current) return;
-    queue.current = queue.current
-      .then(() => writeSave(database, value))
-      .catch(() => {
-        setNotice(
-          'Saving is unavailable. You can keep playing, but changes may not stay after closing. Save a picture to keep your art.',
-        );
-      });
+    if (writable.current) writer.current?.enqueue(value);
   }
   useEffect(() => {
     let cancelled = false;
@@ -32,6 +25,13 @@ export function useSave() {
           return;
         }
         db.current = database;
+        writer.current = createSaveWriter(
+          (value) => writeSave(database, value),
+          () =>
+            setNotice(
+              'Saving is unavailable. You can keep playing, but changes may not stay after closing. Save a picture to keep your art.',
+            ),
+        );
         const result = await loadSave(database);
         if (cancelled) return;
         if (result.status === 'loaded') setSave(result.save);
@@ -62,7 +62,7 @@ export function useSave() {
       document.removeEventListener('visibilitychange', flush);
       window.removeEventListener('pagehide', pagehide);
       const database = db.current;
-      queue.current.finally(() => database?.close());
+      void writer.current?.settled().finally(() => database?.close());
     };
   }, []);
   useEffect(() => {

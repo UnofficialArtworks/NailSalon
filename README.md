@@ -60,7 +60,9 @@ Unit tests cover customer scoring, erasing, milestones, supply availability, gal
 
 The project uses React, TypeScript, Vite, Canvas 2D, and original SVG artwork. All art and sound are local; there are no ads, analytics, accounts, purchases, or runtime third-party requests. Browser test tooling is pinned for reproducibility.
 
-Source is grouped by responsibility: `src/game` owns types, catalogs, scoring and history; `src/art` owns vector artwork and rendering; `src/components` owns controls and views; `src/storage` owns persistence and recovery; `src/audio` owns sound. `src/App.tsx` coordinates a play session.
+Source is grouped by responsibility: `src/game` owns types, catalogs, scoring and history; `src/editor` owns selection, undo/redo and manicure-scoped commits; `src/art` owns shared contours, vector artwork and rendering; `src/components` owns controls and views; `src/storage` owns persistence and recovery; `src/audio` owns sound. `src/App.tsx` coordinates navigation, rewards and dialogs. See [architecture notes](docs/ARCHITECTURE.md).
+
+Autosave finishes each in-flight transaction and keeps only the newest waiting snapshot. This bounds the queue during rapid edits while preserving the latest design and the previous successfully saved state for recovery. `node e2e/storage-performance.mjs` measures a full 50-design gallery against the actual autosave hook; run it with `npm run dev -- --port 4173` in another terminal. Results are synthetic desktop measurements, not iPad performance claims.
 
 ## GitHub Pages
 
