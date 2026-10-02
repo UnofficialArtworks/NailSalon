@@ -43,6 +43,10 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
             // that real rendering lifecycle instead of reusing a native backing store.
             canvas.width = width;
             canvas.height = height;
+            renderNail(ctx, { ...nail, fillColorId: erase ? null : 'color-1' }, width, height);
+            const target = Array.from(ctx.getImageData(0, 0, width, height).data);
+            canvas.width = width;
+            canvas.height = height;
             renderNail(
               ctx,
               {
@@ -64,9 +68,14 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
             for (let y = 0; y < height; y++)
               for (let x = 0; x < width; x++) {
                 const i = (y * width + x) * 4;
-                if (
-                  Math.max(...[0, 1, 2].map((c) => Math.abs(before[i + c] - after[i + c]))) > 15
-                ) {
+                // Measure paint coverage against the actual natural/polished
+                // reference colors. Small changes to glossy highlights are not paint.
+                const distance = (reference: number[]) =>
+                  [0, 1, 2].reduce((sum, c) => sum + Math.abs(reference[i + c] - after[i + c]), 0);
+                const contrast = Math.max(
+                  ...[0, 1, 2].map((c) => Math.abs(before[i + c] - target[i + c])),
+                );
+                if (contrast > 15 && distance(target) < distance(before)) {
                   left = Math.min(left, x);
                   right = Math.max(right, x);
                   top = Math.min(top, y);

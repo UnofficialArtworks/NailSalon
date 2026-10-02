@@ -22,6 +22,8 @@ Optional `length`, `finish` and `patternColorId` fields extend version 1 without
 
 `game/studio` owns collection membership, independent design copying and decoration duplication/reordering. Collection filters leave availability and customer scoring unchanged. Copy operations keep destination geometry, create fresh decoration IDs and deep-copy strokes. The editor records each matching-set action as one undo entry. `CopyNails` owns its temporary targets; `StudioStages` provides pictured navigation without a separate gameplay state machine.
 
+Brush footprint tests compare coverage against rendered natural/polished reference colors, using the same bitmap reset lifecycle as `NailCanvas`. Linux WebKit changed one unrelated highlight pixel from RGBA `[238,136,156,255]` to `[235,114,138,255]` at `(48,170)` in an eraser case; measuring any RGB delta wrongly counted it as erased artwork. Reference-color classification excludes that darker pink pixel while retaining the two-pixel footprint limits. A local negative-control run with intentionally oval taps failed those same limits, confirming detection of the original brush defect.
+
 ## Full-gallery measurement, October 2, 2026
 
 Local Chromium, 1024×768, actual autosave hook and browser IndexedDB. Workload: 50 designs, five nails per design, 12 strokes of 80 points per nail (240,000 gallery points total), approximately 6.6 MB JSON. Forty rapid fill actions followed by a clear action. The latest edit and all 50 designs survived saving.
