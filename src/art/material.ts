@@ -105,12 +105,15 @@ export function nailShine(
   mask.height = height;
   const mc = mask.getContext('2d')!;
   mc.globalCompositeOperation = 'source-over';
+  // Store coverage as opaque grayscale; avoid platform-specific alpha
+  // compositing when erasing a previously full coverage mask.
+  mc.fillStyle = nail.fillColorId ? '#fff' : '#000';
+  mc.fillRect(0, 0, width, height);
   mc.fillStyle = '#fff';
   mc.strokeStyle = '#fff';
   mc.lineCap = mc.lineJoin = 'round';
-  if (nail.fillColorId) mc.fillRect(0, 0, width, height);
   for (const stroke of nail.strokes) {
-    mc.globalCompositeOperation = stroke.erase ? 'destination-out' : 'source-over';
+    mc.fillStyle = mc.strokeStyle = stroke.erase ? '#000' : '#fff';
     mc.lineWidth = stroke.width * width;
     mc.beginPath();
     stroke.points.forEach((p, i) =>
@@ -129,7 +132,7 @@ export function nailShine(
   const coverage = mc.getImageData(0, 0, width, height).data;
   const after = ctx.getImageData(0, 0, width, height);
   for (let i = 0; i < coverage.length; i += 4) {
-    const amount = coverage[i + 3] / 255;
+    const amount = coverage[i] / 255;
     if (!amount) continue;
     for (let channel = 0; channel < 4; channel++)
       after.data[i + channel] = Math.round(
