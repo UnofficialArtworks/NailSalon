@@ -51,6 +51,18 @@ export function startManicure(save: Save, mode: 'free' | 'customer'): Save {
   } else active.skin = save.active.skin;
   return { ...save, active };
 }
+export function hasManicureEdits(manicure: Manicure): boolean {
+  return manicure.nails.some(
+    (n) =>
+      n.cleaned ||
+      n.shape !== 'round' ||
+      n.baseColorId !== null ||
+      n.fillColorId !== null ||
+      n.patternId !== null ||
+      n.strokes.length > 0 ||
+      n.decorations.length > 0,
+  );
+}
 export function scoreRequest(manicure: Manicure, request: Request): Wishes {
   const painted = manicure.nails.map(hasPolish);
   const complete = painted.every(Boolean);

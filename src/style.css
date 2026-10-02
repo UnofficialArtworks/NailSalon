@@ -1075,6 +1075,27 @@ h3 {
   box-shadow: 0 8px 30px #583e592a;
   line-height: 1.6;
 }
+.mobile-reward {
+  display: none;
+}
+@media (max-width: 600px) {
+  .mobile-reward {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 0 0 10px;
+    padding: 4px 8px;
+    border-radius: 14px;
+    background: #fff5;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  .mobile-reward > span {
+    display: inline-flex;
+    align-items: center;
+  }
+}
 .stack-actions {
   display: flex;
   flex-direction: column;

@@ -26,6 +26,7 @@ interface Props {
   rotate: () => void;
   remove: () => void;
   message: (s: string) => void;
+  selectDecoration: (id: string) => void;
 }
 const tools: { id: Tool; name: string }[] = [
   { id: 'clean', name: 'Clean' },
@@ -254,7 +255,7 @@ export function ToolRack(p: Props) {
                   key={d.id}
                   aria-pressed={p.selected === d.id}
                   className={p.selected === d.id ? 'selected' : ''}
-                  onClick={() => p.message(`select:${d.id}`)}
+                  onClick={() => p.selectDecoration(d.id)}
                 >
                   {d.kind === 'sticker' ? <Icon id={d.supplyId} /> : <span>◇</span>}
                   <small>Item {i + 1}</small>

@@ -8,6 +8,7 @@ import {
   saveToGallery,
   startManicure,
   uid,
+  hasManicureEdits,
 } from './game/rules';
 import { history, commit, undo, redo } from './game/history';
 import type { GalleryEntry, Manicure, Nail, Tool } from './game/types';
@@ -42,6 +43,8 @@ export default function App() {
     [savedReveal, setSavedReveal] = useState(false);
   const [artHistory, setArtHistory] = useState(() => history(save.active.nails));
   const historyRef = useRef(artHistory);
+  const activeId = useRef(save.active.id);
+  activeId.current = save.active.id;
   historyRef.current = artHistory;
   const pictureRef = useRef<string | null>(null);
   pictureRef.current = picture;
@@ -79,10 +82,12 @@ export default function App() {
     next = MILESTONES.find((l) => l.stars > save.stars),
     score = m.request ? scoreRequest(m, m.request) : null;
   function editNails(nails: Nail[]) {
+    // A departing canvas may flush after a new manicure has mounted.
+    if (activeId.current !== m.id) return;
     const h = commit(historyRef.current, nails);
     historyRef.current = h;
     setArtHistory(h);
-    setSave((s) => ({ ...s, active: { ...s.active, nails } }));
+    setSave((s) => (s.active.id === m.id ? { ...s, active: { ...s.active, nails } } : s));
     sound('paint');
   }
   function editNail(n: Nail) {
@@ -122,8 +127,7 @@ export default function App() {
     sound();
   }
   function requestBegin(target: 'free' | 'customer' | GalleryEntry) {
-    if (m.nails.some((n) => n.baseColorId || n.strokes.length || n.decorations.length))
-      setPending(target);
+    if (hasManicureEdits(m)) setPending(target);
     else begin(target);
   }
   function gallerySave() {
@@ -252,6 +256,20 @@ export default function App() {
           </button>
         </div>
       </header>
+      {next && (
+        <div className="mobile-reward" aria-label="Next reward">
+          <span>Next treasure · {next.stars - save.stars} ★</span>
+          {next.rewards
+            .filter((r) => r.kind === 'colors')
+            .slice(0, 2)
+            .map((r) => (
+              <span key={r.id} title={r.name}>
+                <Bottle color={COLORS.find((c) => c.id === r.id)!.color} size={24} />
+              </span>
+            ))}
+          <span>{next.rewards[0].name}</span>
+        </div>
+      )}
       {notice && (
         <div className="storage-notice" role="status">
           {notice}
@@ -559,9 +577,8 @@ export default function App() {
           selected={selectedDecoration}
           rotate={() => selectedAction()}
           remove={() => selectedAction(true)}
-          message={(s) =>
-            s.startsWith('select:') ? setSelectedDecoration(s.slice(7)) : setToast(s)
-          }
+          selectDecoration={setSelectedDecoration}
+          message={setToast}
         />
       </main>
       {toast && (

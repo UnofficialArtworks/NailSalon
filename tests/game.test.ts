@@ -15,9 +15,24 @@ import {
   scoreRequest,
   finishCustomer,
   saveToGallery,
+  hasManicureEdits,
 } from '../src/game/rules';
 import { history, commit, undo, redo } from '../src/game/history';
 import { validateSave } from '../src/game/validation';
+
+it('recognizes designs without polish before discarding a manicure', () => {
+  expect(hasManicureEdits(blankManicure())).toBe(false);
+  for (const change of [
+    { patternId: 'pattern-0' },
+    { shape: 'oval' as const },
+    { cleaned: true },
+    { fillColorId: 'color-0' },
+  ]) {
+    const m = blankManicure();
+    Object.assign(m.nails[0], change);
+    expect(hasManicureEdits(m)).toBe(true);
+  }
+});
 
 describe('creative library and rewards', () => {
   it('ships the agreed library and starter kit', () => {

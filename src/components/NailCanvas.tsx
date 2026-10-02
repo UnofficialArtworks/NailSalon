@@ -31,6 +31,7 @@ export function NailCanvas({
       start: Point;
       moveId: string | null;
       nail: Nail;
+      source: Nail;
     } | null>(null),
     frame = useRef(0),
     dirty = useRef(false);
@@ -38,6 +39,13 @@ export function NailCanvas({
   latest.current = { nail, onChange, onSelect };
   useEffect(() => {
     const canvas = ref.current!;
+    const draft = active.current;
+    if (draft && draft.source !== nail) {
+      // Explicit toolbar edits replace the draft; pointer-up must not restore it.
+      active.current = null;
+      dirty.current = false;
+      if (canvas.hasPointerCapture(draft.id)) canvas.releasePointerCapture(draft.id);
+    }
     function render() {
       const r = canvas.getBoundingClientRect();
       const scale = Math.min(window.devicePixelRatio || 1, 2);
@@ -158,7 +166,7 @@ export function NailCanvas({
       if (tool === 'brush') next.baseColorId = colorId;
     }
     if (tool === 'clean') next.cleaned = true;
-    active.current = { id: e.pointerId, stroke, start: p, moveId, nail: next };
+    active.current = { id: e.pointerId, stroke, start: p, moveId, nail: next, source: nail };
     dirty.current = tool !== 'move';
     schedule();
   }
