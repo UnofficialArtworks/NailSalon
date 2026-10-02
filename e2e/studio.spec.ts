@@ -120,16 +120,15 @@ test('collection filters retain an All supplies view and respect locked supplies
 test('material rendering is deterministic and leaves bare and erased areas natural', async ({
   page,
 }) => {
-  page.on('console', (message) => {
-    if (message.text().startsWith('Matte ')) console.log(message.text());
-  });
   await page.goto('/');
   const result = await page.evaluate(async (path) => {
     const { renderNail } = await import(path);
+    const contextPath = path.replace('render.ts', 'context.ts');
+    const { nailContext } = (await import(contextPath)) as typeof import('../src/art/context');
     const canvas = document.createElement('canvas');
     canvas.width = 240;
     canvas.height = 380;
-    const ctx = canvas.getContext('2d')!;
+    const ctx = nailContext(canvas);
     const nail: Nail = {
       shape: 'round',
       cleaned: true,

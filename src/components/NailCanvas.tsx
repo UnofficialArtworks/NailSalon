@@ -1,5 +1,6 @@
 import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
 import { nailPath, renderNail } from '../art/render';
+import { nailContext } from '../art/context';
 import { uid } from '../game/rules';
 import type { Nail, Tool, Stroke, Point } from '../game/types';
 import { SPONGE_WIDTH, washNail, washedCount } from '../game/preparation';
@@ -58,7 +59,7 @@ export function NailCanvas({
       canvas.width = Math.max(1, Math.round(r.width * scale));
       canvas.height = Math.max(1, Math.round(r.height * scale));
       renderNail(
-        canvas.getContext('2d')!,
+        nailContext(canvas),
         active.current?.nail ?? latest.current.nail,
         canvas.width,
         canvas.height,
@@ -141,13 +142,7 @@ export function NailCanvas({
       frame.current = 0;
       const canvas = ref.current;
       if (canvas && active.current)
-        renderNail(
-          canvas.getContext('2d')!,
-          active.current.nail,
-          canvas.width,
-          canvas.height,
-          selected,
-        );
+        renderNail(nailContext(canvas), active.current.nail, canvas.width, canvas.height, selected);
       if (active.current) showWashProgress(active.current.nail);
     });
   }
@@ -162,7 +157,7 @@ export function NailCanvas({
     )
       return;
     const p = position(e),
-      ctx = e.currentTarget.getContext('2d')!;
+      ctx = nailContext(e.currentTarget);
     if (!ctx.isPointInPath(nailPath(nail.shape), p.x, p.y)) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     let next = structuredClone(nail);

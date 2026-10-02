@@ -1,4 +1,5 @@
 import type { Finish, Nail } from '../game/types';
+import { nailContext } from './context';
 
 const glitterTiles = new Map<string, HTMLCanvasElement>();
 function blend(color: string, tint: string, amount: number): string {
@@ -103,7 +104,7 @@ export function nailShine(
   const mask = (matteMask ??= document.createElement('canvas'));
   mask.width = width;
   mask.height = height;
-  const mc = mask.getContext('2d')!;
+  const mc = nailContext(mask);
   mc.globalCompositeOperation = 'source-over';
   // Store coverage as opaque grayscale; avoid platform-specific alpha
   // compositing when erasing a previously full coverage mask.
@@ -131,17 +132,6 @@ export function nailShine(
   // coordinates. This preserves bare pixels exactly across WebKit platforms.
   const coverage = mc.getImageData(0, 0, width, height).data;
   const after = ctx.getImageData(0, 0, width, height);
-  if (import.meta.env.DEV && nail.fillColorId) {
-    const center = (Math.floor(height / 2) * width + Math.floor(width / 2)) * 4;
-    console.debug(
-      'Matte snapshot:',
-      JSON.stringify({
-        before: [...before.data.slice(center, center + 4)],
-        after: [...after.data.slice(center, center + 4)],
-        mask: [...coverage.slice(center, center + 4)],
-      }),
-    );
-  }
   for (let i = 0; i < coverage.length; i += 4) {
     const amount = coverage[i] / 255;
     if (!amount) continue;
@@ -151,13 +141,5 @@ export function nailShine(
       );
   }
   ctx.putImageData(after, 0, 0);
-  if (import.meta.env.DEV && nail.fillColorId) {
-    console.debug(
-      'Matte result:',
-      JSON.stringify([
-        ...ctx.getImageData(Math.floor(width / 2), Math.floor(height / 2), 1, 1).data,
-      ]),
-    );
-  }
 }
 let matteMask: HTMLCanvasElement | undefined;

@@ -7,6 +7,7 @@ import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
 import { lengthBox } from './length';
 import { polishPaint, nailShine } from './material';
+import { nailContext } from './context';
 import { DIRT_SPOTS } from '../game/preparation';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
@@ -264,7 +265,7 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
     const tile = document.createElement('canvas');
     tile.width = 240;
     tile.height = Math.round((240 * b.h) / b.w);
-    renderNail(tile.getContext('2d')!, n, tile.width, tile.height);
+    renderNail(nailContext(tile), n, tile.width, tile.height);
     ctx.save();
     ctx.translate(b.x + b.w / 2, b.y + b.h / 2);
     ctx.rotate((b.r * Math.PI) / 180);
