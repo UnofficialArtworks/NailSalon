@@ -17,9 +17,10 @@ export function polishPaint(
   ctx: CanvasRenderingContext2D,
   color: string,
   finish: Finish = 'glossy',
+  nailWidth = 1,
 ): string | CanvasGradient | CanvasPattern {
   if (finish === 'pearl') {
-    const gradient = ctx.createLinearGradient(0, 0, 1, 0.25);
+    const gradient = ctx.createLinearGradient(0, 0, nailWidth, 0.25 * nailWidth);
     gradient.addColorStop(0, blend(color, '#77edff', 0.25));
     gradient.addColorStop(0.3, blend(color, '#ffffff', 0.5));
     gradient.addColorStop(0.52, blend(color, '#ebb4ff', 0.35));
@@ -50,6 +51,6 @@ export function polishPaint(
     glitterTiles.set(color, tile);
   }
   const pattern = ctx.createPattern(tile, 'repeat')!;
-  pattern.setTransform(new DOMMatrix().scale(0.25 / 128));
+  pattern.setTransform(new DOMMatrix().scale((0.25 * nailWidth) / 128));
   return pattern;
 }

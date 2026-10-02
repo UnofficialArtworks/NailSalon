@@ -18,7 +18,7 @@
 
 Optional `length`, `finish` and `patternColorId` fields extend version 1 without rewriting previous saves: absence means short nails, glossy polish and original pattern ink. Validation checks both active and gallery artwork; invalid settings use the existing recovery flow.
 
-`art/material` creates deterministic glitter tiles and pearl gradients. Fill and brush styles are created in the same uniformly scaled coordinate space, aligning their textures and retaining round brush footprints. Glitter tiles are cached per catalog color and paint styles are reused per render. Materials are applied only to polish, so bare and erased regions remain natural.
+`art/material` creates deterministic glitter tiles and pearl gradients. Fill and brush styles use physical canvas pixels, aligning their textures and retaining round brush footprints without transformed stroke paths. Stored points stay normalized and are converted only while rendering. Glitter tiles are cached per catalog color and paint styles are reused per render. Materials are applied only to polish, so bare and erased regions remain natural.
 
 `game/studio` owns collection membership, independent design copying and decoration duplication/reordering. Collection filters leave availability and customer scoring unchanged. Copy operations keep destination geometry, create fresh decoration IDs and deep-copy strokes. The editor records each matching-set action as one undo entry. `CopyNails` owns its temporary targets; `StudioStages` provides pictured navigation without a separate gameplay state machine.
 

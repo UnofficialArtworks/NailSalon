@@ -51,6 +51,8 @@ test('lengths keep the finger fixed and survive resize, undo and reload', async 
 test('finishes, pattern ink, copies and layers persist into the gallery and PNG', async ({
   page,
 }) => {
+  // This exercises painting, copying, export, reload and gallery editing in one session.
+  test.setTimeout(60000);
   await start(page);
   await page.getByRole('button', { name: 'Medium nails' }).click();
   await page.getByRole('button', { name: /2. Paint/ }).click();

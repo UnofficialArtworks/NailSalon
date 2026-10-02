@@ -160,38 +160,37 @@ export function renderNail(
   ctx.clip(outline);
   ctx.fillStyle = '#fff4e8';
   ctx.fillRect(0, 0, 1, 1);
-  // Stroke width is measured against nail width. Use uniform scaling for the
-  // brush so round taps and caps match the circular cursor on tall nails too.
-  // Create fill and stroke materials in this same space to align their textures.
+  // Draw polish in physical canvas pixels. Native round caps remain circular
+  // without depending on the browser's handling of transformed stroke paths.
+  // Fill and brush materials share this space to align their textures.
   ctx.save();
-  const aspect = width / height;
-  ctx.scale(1, aspect);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   const paints = new Map<string, string | CanvasGradient | CanvasPattern>();
   if (nail.fillColorId) {
-    const paint = polishPaint(ctx, colorOf(nail.fillColorId), nail.finish);
+    const paint = polishPaint(ctx, colorOf(nail.fillColorId), nail.finish, width);
     paints.set(nail.fillColorId, paint);
     ctx.fillStyle = paint;
-    ctx.fillRect(0, 0, 1, 1 / aspect);
+    ctx.fillRect(0, 0, width, height);
   }
   for (const s of nail.strokes) {
     let paint = paints.get(s.colorId);
     if (!s.erase && !paint) {
-      paint = polishPaint(ctx, colorOf(s.colorId), nail.finish);
+      paint = polishPaint(ctx, colorOf(s.colorId), nail.finish, width);
       paints.set(s.colorId, paint);
     }
     ctx.strokeStyle = s.erase ? '#fff4e8' : paint!;
     ctx.fillStyle = ctx.strokeStyle;
-    ctx.lineWidth = s.width;
+    ctx.lineWidth = s.width * width;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
     s.points.forEach((p, i) =>
-      i === 0 ? ctx.moveTo(p.x, p.y / aspect) : ctx.lineTo(p.x, p.y / aspect),
+      i === 0 ? ctx.moveTo(p.x * width, p.y * height) : ctx.lineTo(p.x * width, p.y * height),
     );
     ctx.stroke();
     if (s.points.length === 1) {
       ctx.beginPath();
-      ctx.arc(s.points[0].x, s.points[0].y / aspect, s.width / 2, 0, Math.PI * 2);
+      ctx.arc(s.points[0].x * width, s.points[0].y * height, (s.width * width) / 2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
