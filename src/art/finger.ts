@@ -1,6 +1,6 @@
 import type { Shape } from '../game/types';
 
-export const FINGER_NAIL = { x: 45, y: 26, w: 150, h: 238 };
+export const FINGER_NAIL = { x: 41.25, y: 20.05, w: 157.5, h: 249.9 };
 
 // Enlarge the nail's upper contour slightly, then continue it into the finger.
 export function fingerPath(shape: Shape): string {
