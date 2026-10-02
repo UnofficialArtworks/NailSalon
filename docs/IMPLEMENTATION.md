@@ -1,0 +1,19 @@
+# First-release contract
+
+The accepted plan is a standalone, gentle cartoon nail salon for ages 6–8. Free play and repeatable customers use the same normalized five-nail artwork model. No timers, failure penalties, consumable supplies, backend, analytics, purchases, multiplayer, or offline launching.
+
+## Data and behavior
+
+- Save version 1 stores stars, served-customer count, active manicure, room choices, audio/tutorial settings, and up to 50 gallery designs.
+- Every nail has a shape, cleaning state, primary/base color metadata, optional full-fill color, polish/eraser strokes, optional pattern, and ordered decorations.
+- Stroke and decoration coordinates remain normalized within the nail. Resize never rewrites coordinates. Stroke input is committed on pointer-up, cancellation, lost capture, blur, and hidden-page transitions.
+- Customer scoring checks visible polish, the chosen primary/base color on three nails, and the requested sticker. Finishing the same active manicure is idempotent. Undo only changes artwork, never claimed rewards.
+- Twelve stable reward bundles unlock at 3, 6, …, 36 stars. All rewards are computed from stars rather than maintained as a second inventory that can drift.
+- Customer requests cycle the 12 characters and deterministically select from the unlocked kit. Supply IDs and reward ordering are compatibility contracts for saved designs.
+- Each save transaction preserves the previous valid save. Invalid saves block autosave until explicit recovery; recovery retains the raw original backup.
+
+## Quality boundaries
+
+Always retain recoverable artwork, validate persisted data, keep touch targets at least 48 CSS pixels, support reduced motion, and use local assets. Test behavior with Vitest and complete flows in Playwright. Run checks before publishing. Never silently reset saves, discard gallery entries, duplicate customer rewards, suppress errors to make tests pass, or upload personal game data.
+
+Browser tests run in isolated profiles. The native iPad Safari and child playtest remain human release checkpoints. GitHub hosting needs a remote repository and Pages configuration; a local build alone does not mean the game is deployed.
