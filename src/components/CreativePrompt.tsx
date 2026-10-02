@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CREATIVE_IDEAS } from '../game/occasions';
+import { creativeIdeasAt } from '../game/occasions';
 import { COLORS } from '../game/catalog';
 import { OccasionArt } from './OccasionCard';
 import { Bottle, Icon } from './Icon';
@@ -7,7 +7,9 @@ import { Bottle, Icon } from './Icon';
 export function CreativePrompt({
   color,
   sticker,
+  stars,
 }: {
+  stars: number;
   color: (id: string) => void;
   sticker: (id: string) => void;
 }) {
@@ -18,7 +20,8 @@ export function CreativePrompt({
         ✧ Creative idea
       </button>
     );
-  const prompt = CREATIVE_IDEAS[idea];
+  const ideas = creativeIdeasAt(stars);
+  const prompt = ideas[idea];
   return (
     <section className="creative-prompt" aria-label="Optional creative idea">
       <OccasionArt id={prompt.occasion} />
@@ -38,7 +41,7 @@ export function CreativePrompt({
         </button>
       </div>
       <div className="idea-actions">
-        <button onClick={() => setIdea((idea + 1) % CREATIVE_IDEAS.length)}>Another idea</button>
+        <button onClick={() => setIdea((idea + 1) % ideas.length)}>Another idea</button>
         <button onClick={() => setIdea(null)}>Just play</button>
       </div>
       <small>Just an idea — make it your own!</small>

@@ -1,5 +1,9 @@
 # Nail Salon: competitor research and next-release discussion
 
+## Approved creative activities implemented
+
+Chris approved brush-through stencils, two-color marble dipping and inspiration cards available earlier. The Polish tray now includes heart/star/flower masks with tap filling and lifting, plus an optional bowl with two unlocked colors, four repeatable swirl variations and a dip action. These follow the creation mechanics described by [CrazyGames](https://www.crazygames.com/game/girls-nail-salon---nail-games), using original geometry and local artwork. Free-play inspiration is available from the start, with suggestions filtered to unlocked supplies, supporting optional creativity described by [Budge](https://budgestudios.com/en/apps/detail/hello-kitty-nail-salon/). All activities preserve forgiving scoring, undo, browser saves and PNG export. No advertisements, deadlines or consumption were added.
+
 ## Follow-up review: photo customization
 
 Revisited the original findings and the official Poki, CrazyGames and Budge descriptions on October 2, 2026. Photo finishing is still a strong fit: [Nails DIY](https://poki.com/en/g/nails-diy-manicure-master) explicitly ends with rings and a photo shoot. The expanded local studio adds backdrop/frame/prop choices and jewelry, with a mix of immediate access and existing star milestone rewards. All original photo choices remain free. Shared foreground SVG artwork appears in both gallery previews and PNG export, and old photo saves default to no frame or props.

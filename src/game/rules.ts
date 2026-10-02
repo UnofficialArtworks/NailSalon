@@ -1,6 +1,7 @@
 import { COLORS, CUSTOMERS, SKINS, suppliesAt } from './catalog';
 import type { Save, Manicure, Request, Wishes, Nail, Point, GalleryEntry } from './types';
 import { samePhoto, DEFAULT_PHOTO } from './photo';
+import { insideStencil } from './creative';
 export const uid = (): string =>
   crypto.randomUUID?.() ??
   Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
@@ -110,6 +111,7 @@ export function hasPolish(nail: Nail): boolean {
   return candidates.some((p) => {
     for (let i = nail.strokes.length - 1; i >= 0; i--) {
       const s = nail.strokes[i];
+      if (s.stencilId && !insideStencil(s.stencilId, p)) continue;
       if (s.points.some((a, j) => distanceToSegment(p, a, s.points[j + 1] ?? a) <= s.width / 2))
         return !s.erase;
     }
@@ -147,6 +149,7 @@ export function fillNails(manicure: Manicure, colorId = COLORS[0].id): Manicure 
       ...n,
       baseColorId: colorId,
       fillColorId: colorId,
+      marble: null,
       strokes: [],
     })),
   };

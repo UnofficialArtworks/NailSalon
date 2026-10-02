@@ -60,7 +60,7 @@ export function copyNailArt(
     if (i === source || !targets.includes(i)) return nail;
     if (mode === 'color') {
       const color = from.fillColorId ?? from.baseColorId;
-      return { ...nail, cleaned: true, baseColorId: color, fillColorId: color };
+      return { ...nail, cleaned: true, baseColorId: color, fillColorId: color, marble: null };
     }
     return {
       ...structuredClone(from),

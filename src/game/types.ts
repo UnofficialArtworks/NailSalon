@@ -1,6 +1,7 @@
 export type Shape = 'round' | 'oval' | 'square' | 'soft-square' | 'almond';
 export type NailLength = 'short' | 'medium' | 'long';
 export type Finish = 'glossy' | 'glitter' | 'pearl' | 'matte' | 'metallic';
+export type StencilId = 'heart' | 'star' | 'flower';
 export type Tool = 'clean' | 'brush' | 'eraser' | 'pattern' | 'sticker' | 'gem' | 'move';
 export interface Point {
   x: number;
@@ -12,6 +13,8 @@ export interface Stroke {
   /** Brush diameter as a fraction of nail width; round in rendered pixels. */
   width: number;
   erase: boolean;
+  /** Immutable mask: lifting a stencil only affects future strokes. */
+  stencilId?: StencilId;
 }
 export interface Decoration extends Point {
   id: string;
@@ -31,6 +34,7 @@ export interface Nail {
   washed?: number;
   baseColorId: string | null;
   fillColorId: string | null;
+  marble?: { colorId: string; variant: number } | null;
   strokes: Stroke[];
   patternId: string | null;
   decorations: Decoration[];

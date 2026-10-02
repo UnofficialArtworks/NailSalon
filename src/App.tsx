@@ -12,7 +12,7 @@ import {
   designIsSaved,
 } from './game/rules';
 import { useEditor } from './editor/useEditor';
-import type { GalleryEntry, Manicure, Tool } from './game/types';
+import type { GalleryEntry, Manicure, Tool, StencilId } from './game/types';
 import { useSave } from './storage/useSave';
 import { audioSettings, audioVisibility, awakenAudio, disposeAudio, sound } from './audio/sound';
 import { exportManicure } from './art/render';
@@ -38,6 +38,7 @@ type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
   const [copying, setCopying] = useState(false);
+  const [stencil, setStencil] = useState<StencilId | null>(null);
   const [panel, setPanel] = useState<Panel>(null),
     [tool, setTool] = useState<Tool>('clean'),
     [color, setColor] = useState('color-0'),
@@ -317,9 +318,10 @@ export default function App() {
           <OccasionCard occasion={occasionFor(customer.id)} />
         </div>
       )}
-      {m.mode === 'free' && save.stars >= 36 && (
+      {m.mode === 'free' && (
         <div className="studio-inspiration">
           <CreativePrompt
+            stars={save.stars}
             color={(id) => {
               setColor(id);
               setTool('brush');
@@ -501,6 +503,7 @@ export default function App() {
                       tool={tool}
                       colorId={color}
                       brush={brush}
+                      stencilId={stencil}
                       supplyId={supply}
                       selected={selectedDecoration}
                       onSelect={setSelectedDecoration}
@@ -561,6 +564,7 @@ export default function App() {
                     ...nail,
                     baseColorId: null,
                     fillColorId: null,
+                    marble: null,
                     strokes: [],
                     patternId: null,
                     decorations: [],
@@ -578,7 +582,7 @@ export default function App() {
           <div className="workspace-bottom">
             <span>
               {zoom
-                ? `Selected tool: ${tool === 'brush' ? 'Polish brush' : tool}`
+                ? `Selected tool: ${tool === 'brush' ? (stencil ? `${stencil} stencil brush` : 'Polish brush') : tool}`
                 : 'Five little nails. Endless possibilities.'}
             </span>
             <button onClick={() => setCopying(true)}>Copy this nail</button>
@@ -599,6 +603,8 @@ export default function App() {
           supply={supply}
           setSupply={setSupply}
           brush={brush}
+          stencil={stencil}
+          setStencil={setStencil}
           setBrush={setBrush}
           nail={nail}
           edit={editNail}

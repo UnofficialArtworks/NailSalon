@@ -1,13 +1,16 @@
-import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect, useRef, useId, type PointerEvent as ReactPointerEvent } from 'react';
 import { nailPath, renderNail } from '../art/render';
 import { nailContext } from '../art/context';
 import { uid } from '../game/rules';
-import type { Nail, Tool, Stroke, Point } from '../game/types';
+import type { Nail, Tool, Stroke, Point, StencilId } from '../game/types';
+import { stencilPath } from '../game/creative';
+import { nailContour } from '../art/contour';
 import { SPONGE_WIDTH, washNail, washedCount } from '../game/preparation';
 import { CleaningSponge } from './CleaningSponge';
 interface Props {
   nail: Nail;
   tool?: Tool;
+  stencilId?: StencilId | null;
   colorId?: string;
   brush?: number;
   supplyId?: string;
@@ -19,6 +22,7 @@ interface Props {
 export function NailCanvas({
   nail,
   tool,
+  stencilId = null,
   colorId = 'color-0',
   brush = 0.09,
   supplyId = 'sticker-0',
@@ -27,6 +31,8 @@ export function NailCanvas({
   onChange,
   label = 'Nail painting area',
 }: Props) {
+  const guideId = useId();
+  const contour = nailContour(nail.shape);
   const ref = useRef<HTMLCanvasElement>(null),
     cursor = useRef<HTMLSpanElement>(null),
     sponge = useRef<HTMLSpanElement>(null),
@@ -99,7 +105,7 @@ export function NailCanvas({
       document.removeEventListener('visibilitychange', visibility);
       window.removeEventListener('blur', flush);
     };
-  }, [tool]);
+  }, [tool, stencilId]);
   function showWashProgress(n: Nail) {
     if (washMeter.current) washMeter.current.style.width = `${(washedCount(n) / 9) * 100}%`;
   }
@@ -194,6 +200,7 @@ export function NailCanvas({
       if (!moveId) return;
     }
     const stroke: Stroke = { points: [p], colorId, width: brush, erase: tool === 'eraser' };
+    if (tool === 'brush' && stencilId) stroke.stencilId = stencilId;
     if (tool === 'brush' || tool === 'eraser') {
       if (next.strokes.length >= 500) return;
       next.strokes.push(stroke);
@@ -262,6 +269,30 @@ export function NailCanvas({
         onPointerCancel={finish}
         onLostPointerCapture={finish}
       />
+      {onChange && tool === 'brush' && stencilId && (
+        <svg
+          className="stencil-guide"
+          viewBox="0 0 1 1"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <defs>
+            <clipPath id={guideId}>
+              <path d={`M${contour.start} ${contour.upper} ${contour.lower}Z`} />
+            </clipPath>
+          </defs>
+          <g clipPath={`url(#${guideId})`}>
+            <path d={`M0 0H1V1H0Z ${stencilPath(stencilId)}`} fillRule="evenodd" fill="#af68c344" />
+            <path
+              d={stencilPath(stencilId)}
+              fill="none"
+              stroke="#713f89"
+              strokeWidth=".008"
+              strokeDasharray=".025 .012"
+            />
+          </g>
+        </svg>
+      )}
       {onChange && (tool === 'brush' || tool === 'eraser') && (
         <span ref={cursor} className="brush-cursor" aria-hidden="true" />
       )}

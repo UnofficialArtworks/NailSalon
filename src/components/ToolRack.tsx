@@ -1,5 +1,6 @@
 import { COLORS, PATTERNS, STICKERS, GEMS, suppliesAt } from '../game/catalog';
-import type { Nail, Tool, Shape, NailLength } from '../game/types';
+import type { Nail, Tool, Shape, NailLength, StencilId } from '../game/types';
+import { CreativePaint } from './CreativePaint';
 import { COLLECTIONS, duplicateItem, reorderItem } from '../game/studio';
 import { Icon, Bottle } from './Icon';
 import { uid } from '../game/rules';
@@ -18,6 +19,8 @@ interface Props {
   setSupply: (id: string) => void;
   brush: number;
   setBrush: (n: number) => void;
+  stencil: StencilId | null;
+  setStencil: (id: StencilId | null) => void;
   nail: Nail;
   edit: (n: Nail) => void;
   fillAll: () => void;
@@ -151,6 +154,7 @@ export function ToolRack(p: Props) {
                       cleaned: true,
                       baseColorId: p.color,
                       fillColorId: p.color,
+                      marble: null,
                       strokes: [],
                     })
                   }
@@ -159,6 +163,16 @@ export function ToolRack(p: Props) {
                 </button>
                 <button onClick={p.fillAll}>Color all five</button>
               </div>
+            )}
+            {p.tool === 'brush' && (
+              <CreativePaint
+                nail={p.nail}
+                color={p.color}
+                stars={p.stars}
+                stencil={p.stencil}
+                setStencil={p.setStencil}
+                edit={p.edit}
+              />
             )}
             {p.tool === 'brush' && (
               <div className="finish-picker" aria-label="Polish finish">
@@ -249,6 +263,7 @@ export function ToolRack(p: Props) {
                               ...p.nail,
                               cleaned: true,
                               fillColorId: null,
+                              marble: null,
                               baseColorId: null,
                               strokes: [],
                               patternId: null,
@@ -276,6 +291,7 @@ export function ToolRack(p: Props) {
                               strokes: [],
                               cleaned: true,
                               fillColorId: p.color,
+                              marble: null,
                               patternId: item.id,
                             }}
                             label={item.name}

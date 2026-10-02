@@ -77,6 +77,7 @@ export function ManicurePrep({
                   shape: s.id,
                   cleaned: true,
                   fillColorId: null,
+                  marble: null,
                   baseColorId: null,
                   strokes: [],
                   decorations: [],

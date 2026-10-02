@@ -1,5 +1,6 @@
 import type { Finish, Nail } from '../game/types';
 import { nailContext } from './context';
+import { clipStencil } from './creative';
 
 const glitterTiles = new Map<string, HTMLCanvasElement>();
 function blend(color: string, tint: string, amount: number): string {
@@ -114,6 +115,8 @@ export function nailShine(
   mc.strokeStyle = '#fff';
   mc.lineCap = mc.lineJoin = 'round';
   for (const stroke of nail.strokes) {
+    mc.save();
+    if (stroke.stencilId) clipStencil(mc, stroke.stencilId, width, height);
     mc.fillStyle = mc.strokeStyle = stroke.erase ? '#000' : '#fff';
     mc.lineWidth = stroke.width * width;
     mc.beginPath();
@@ -127,6 +130,7 @@ export function nailShine(
       mc.arc(p.x * width, p.y * height, (stroke.width * width) / 2, 0, Math.PI * 2);
       mc.fill();
     }
+    mc.restore();
   }
   // Blend actual pixels instead of scaling a composited canvas back into nail
   // coordinates. This preserves bare pixels exactly across WebKit platforms.

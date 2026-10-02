@@ -83,7 +83,7 @@ test('post-unlock creative ideas are optional and suggest supplies without chang
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await start(page);
-  await expect(page.getByRole('button', { name: 'Creative idea' })).toHaveCount(0);
+  await expect(page.getByRole('button', { name: 'Creative idea' })).toBeVisible();
   await page.evaluate(
     async ([rulesPath, dbPath]) => {
       const { createSave } = await import(rulesPath);

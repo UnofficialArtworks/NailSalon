@@ -9,6 +9,7 @@ import { lengthBox } from './length';
 import { polishPaint, nailShine } from './material';
 import { nailContext } from './context';
 import { DIRT_SPOTS } from '../game/preparation';
+import { clipStencil, marbleRibbons } from './creative';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
   const { start, upper, lower } = nailContour(shape);
@@ -177,8 +178,14 @@ export function renderNail(
     paints.set(nail.fillColorId, paint);
     ctx.fillStyle = paint;
     ctx.fillRect(0, 0, width, height);
+    if (nail.marble) {
+      ctx.fillStyle = polishPaint(ctx, colorOf(nail.marble.colorId), nail.finish, width);
+      marbleRibbons(ctx, width, height, nail.marble.variant);
+    }
   }
   for (const s of nail.strokes) {
+    ctx.save();
+    if (s.stencilId) clipStencil(ctx, s.stencilId, width, height);
     let paint = paints.get(s.colorId);
     if (!s.erase && !paint) {
       paint = polishPaint(ctx, colorOf(s.colorId), nail.finish, width);
@@ -199,6 +206,7 @@ export function renderNail(
       ctx.arc(s.points[0].x * width, s.points[0].y * height, (s.width * width) / 2, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.restore();
   }
   ctx.restore();
   if (nail.patternId) pattern(ctx, nail.patternId, nail.patternColorId);

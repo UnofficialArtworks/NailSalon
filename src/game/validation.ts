@@ -1,6 +1,7 @@
 import { COLORS, PATTERNS, STICKERS, GEMS, SHAPES, SKINS, CUSTOMERS, ROOM } from './catalog';
 import type { Save } from './types';
 import { validPhoto } from './photo';
+import { STENCILS } from './creative';
 const object = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 const number = (v: unknown, min = 0, max = 1) =>
@@ -23,6 +24,13 @@ function nail(v: unknown): boolean {
     (v.washed !== undefined && (!number(v.washed, 0, 511) || !Number.isInteger(v.washed))) ||
     (v.baseColorId !== null && !id(v.baseColorId, COLORS)) ||
     (v.fillColorId !== null && !id(v.fillColorId, COLORS)) ||
+    (v.marble !== undefined &&
+      v.marble !== null &&
+      (!object(v.marble) ||
+        !id(v.marble.colorId, COLORS) ||
+        v.fillColorId === null ||
+        !number(v.marble.variant, 0, 3) ||
+        !Number.isInteger(v.marble.variant))) ||
     (v.patternId !== null && !id(v.patternId, PATTERNS))
   )
     return false;
@@ -40,6 +48,7 @@ function nail(v: unknown): boolean {
         id(s.colorId, COLORS) &&
         number(s.width, 0.005, 0.5) &&
         typeof s.erase === 'boolean' &&
+        (s.stencilId === undefined || id(s.stencilId, STENCILS)) &&
         Array.isArray(s.points) &&
         s.points.length > 0 &&
         s.points.length <= 3000 &&

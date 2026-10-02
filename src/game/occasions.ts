@@ -1,3 +1,4 @@
+import { suppliesAt } from './catalog';
 export const OCCASIONS = [
   {
     id: 'rainbow',
@@ -59,3 +60,14 @@ export const CREATIVE_IDEAS = [
     sticker: 35,
   },
 ] as const;
+
+/** Inspiration is available immediately; suggestions grow with the player's kit. */
+export function creativeIdeasAt(stars: number) {
+  const kit = suppliesAt(stars);
+  return CREATIVE_IDEAS.map((idea) => ({
+    ...idea,
+    colors: idea.colors.filter((i) => kit.colors.some((c) => c.id === `color-${i}`)),
+    hint: idea.occasion === 'space' && stars < 36 ? 'Try sky colors and tiny rockets.' : idea.hint,
+    sticker: kit.stickers.some((s) => s.id === `sticker-${idea.sticker}`) ? idea.sticker : 0,
+  }));
+}
