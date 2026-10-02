@@ -1,9 +1,11 @@
+import { skipPreparation } from './helpers';
 import { test, expect } from '@playwright/test';
 
 test('mobile layouts show the next reward', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   await expect(page.getByLabel('Next reward', { exact: true })).toBeVisible();
   await expect(page.getByLabel('Next reward', { exact: true })).toContainText('3 ★');
 });
@@ -11,6 +13,7 @@ test('mobile layouts show the next reward', async ({ page }) => {
 test('a departing canvas cannot copy its draft into a new manicure', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Edit nail 1', exact: true }).click();
   const box = (await page.getByLabel('Paint nail 1', { exact: true }).boundingBox())!;
   await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.4);
@@ -29,6 +32,7 @@ test('a departing canvas cannot copy its draft into a new manicure', async ({ pa
 test('pattern-only artwork is protected before starting a new manicure', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Patterns', exact: true }).click();
   await page.getByRole('button', { name: 'Apply pattern', exact: true }).click();
   await page.getByRole('button', { name: 'New manicure', exact: true }).click();
@@ -42,6 +46,7 @@ test('a toolbar fill during a held stroke is not overwritten on pointer release'
 }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Edit nail 1', exact: true }).click();
   const nail = page.getByLabel('Paint nail 1', { exact: true });
   const box = (await nail.boundingBox())!;

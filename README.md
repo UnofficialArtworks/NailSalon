@@ -15,12 +15,12 @@ Open the address Vite prints. For an iPad on the same network, open the **Networ
 
 ## Playing
 
-- **Free play:** tap a nail to open its close-up view. Clean it, select a shape, brush or fill polish, apply a pattern, and place stickers or gems. Prep can be skipped. Change skin tone under **Nail shapes & skin tones**.
+- **Free play:** tap a nail to open its close-up view. Clean it, select a shape, brush or fill polish, apply a pattern, and place stickers or gems. New manicures open **Clean**, with nail shapes and free-play skin tones visible before painting. **Start painting** skips preparation. **How to play** offers short, replayable tips you can skip.
 - **Customers:** follow the two picture wishes, or make something different. Polish on all five nails earns one star. Matching the requested base color on at least three nails earns another; adding the requested sticker earns another. There are no timers or unhappy customers.
-- **Tools:** undo/redo whole actions, adjust brush size, erase polish, clear a nail, or color all five. Use **Move** to select and drag decorations; select them from its list to rotate or remove them. Button placement and fill work without drawing or dragging.
+- **Tools:** undo/redo whole actions, adjust brush size, erase polish, clear a nail, or color all five. Use **Move** to select and drag decorations; select them from its list to rotate or remove them. Arrow buttons move selected decorations; **Center item** recenters them. Button placement and fill work without drawing or dragging. The circular brush cursor follows the brush-size setting. Palette arrows reveal more supplies; select a pattern, then press **Apply pattern**.
 - **Shapes:** a selected shape applies to all five nails. Artwork stays attached to the nails when changing shape or rotating the device.
 - **Rewards:** every three stars, through 36, automatically unlock a bundle of supplies and room choices. Customers remain available after all rewards are earned.
-- **Gallery:** save up to 50 designs, edit a copy, delete with confirmation, or export a PNG. A full gallery never discards existing art automatically.
+- **Gallery:** save up to 50 designs, edit a copy, delete with confirmation, or export a PNG. An unchanged saved manicure stays marked **Saved**, including after reload, and does not prompt you to save again. A full gallery never discards existing art automatically.
 - **Sound:** music and effects have separate controls. Original synthesized music begins after interaction and pauses when the page is hidden.
 
 The library contains 12 customers, 36 colors, 10 patterns, 30 stickers, 12 gems, five nail shapes, six skin tones, and three choices each for walls, desks, and tabletop accessories. Half the supplies and one of each room choice are initially available.

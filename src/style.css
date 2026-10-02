@@ -1393,3 +1393,140 @@ h3 {
     scroll-behavior: auto !important;
   }
 }
+
+/* Picture-led manicure and supply navigation. */
+.manicure-prep {
+  width: 100%;
+  display: grid;
+  gap: 10px;
+}
+.manicure-prep h3 {
+  font-size: 14px;
+}
+.prep-heading {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+}
+.prep-heading p {
+  font-size: 12px;
+}
+.prep-heading button {
+  font-size: 11px;
+  padding: 8px;
+}
+.manicure-prep .shape-buttons {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.manicure-prep .shape-buttons button {
+  min-width: 48px;
+  padding: 8px 3px;
+  white-space: normal;
+}
+.manicure-prep .shape-tile {
+  width: 34px;
+  height: 46px;
+}
+.supply-strip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+.supply-strip > .color-grid,
+.supply-strip > .decoration-grid {
+  flex: 1;
+  min-width: 0;
+  width: auto;
+}
+.strip-arrow {
+  width: 48px;
+  min-width: 48px;
+  height: 66px;
+  font-size: 30px;
+  padding: 0;
+}
+.nail-surface {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+.nail-canvas.interactive {
+  cursor: pointer;
+}
+.nail-canvas.interactive[data-brush-tool='true'] {
+  cursor: none;
+}
+.brush-cursor {
+  display: none;
+  position: absolute;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px #623656;
+  box-sizing: border-box;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 3;
+}
+.tutorial-welcome-art {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 0;
+}
+.tutorial-coach {
+  max-width: 1200px;
+  margin: 0 auto 12px;
+  padding: 10px 14px;
+  background: #fff5fb;
+  border: 3px solid white;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.coach-tip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.coach-tip p {
+  font-size: 12px;
+  margin-top: 3px;
+}
+.coach-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.coach-actions button {
+  font-size: 11px;
+  padding: 8px;
+}
+.guide-save-tip {
+  padding: 10px;
+  background: #fff6cf;
+  border-radius: 15px;
+  font-size: 13px;
+}
+@media (max-width: 600px) {
+  .tutorial-coach {
+    flex-wrap: wrap;
+  }
+  .coach-actions {
+    width: 100%;
+  }
+  .coach-actions button {
+    flex: 1;
+  }
+  .manicure-prep .shape-buttons button {
+    font-size: 10px;
+  }
+}

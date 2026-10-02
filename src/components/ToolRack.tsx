@@ -1,10 +1,12 @@
-import { COLORS, PATTERNS, STICKERS, GEMS, SHAPES, SKINS, suppliesAt } from '../game/catalog';
+import { COLORS, PATTERNS, STICKERS, GEMS, suppliesAt } from '../game/catalog';
 import type { Nail, Tool, Shape } from '../game/types';
 import { Icon, Bottle } from './Icon';
 import { uid } from '../game/rules';
 import { ToolPicture } from './ToolPicture';
 import { NailCanvas } from './NailCanvas';
 import { useRef } from 'react';
+import { ManicurePrep } from './ManicurePrep';
+import { SupplyStrip } from './SupplyStrip';
 interface Props {
   stars: number;
   tool: Tool;
@@ -36,6 +38,12 @@ const tools: { id: Tool; name: string }[] = [
   { id: 'gem', name: 'Gems' },
   { id: 'eraser', name: 'Eraser' },
   { id: 'move', name: 'Move' },
+];
+const nudges = [
+  { direction: 'left', dx: -0.04, dy: 0, icon: '←' },
+  { direction: 'up', dx: 0, dy: -0.04, icon: '↑' },
+  { direction: 'down', dx: 0, dy: 0.04, icon: '↓' },
+  { direction: 'right', dx: 0.04, dy: 0, icon: '→' },
 ];
 export function ToolRack(p: Props) {
   const remembered = useRef<Record<string, string>>({});
@@ -72,29 +80,35 @@ export function ToolRack(p: Props) {
               <span>{COLORS.find((c) => c.id === p.color)?.name}</span>
             </div>
             {p.tool === 'brush' && (
-              <div className="color-grid">
-                {COLORS.map((c) => {
-                  const available = kit.colors.some((a) => a.id === c.id);
-                  return (
-                    <button
-                      key={c.id}
-                      className={`swatch ${p.color === c.id ? 'selected' : ''} ${available ? '' : 'locked'}`}
-                      aria-label={`${c.name}${available ? '' : ' · locked'}`}
-                      aria-pressed={p.color === c.id}
-                      onClick={() =>
-                        available
-                          ? p.setColor(c.id)
-                          : p.message('Serve customers to earn stars and unlock this polish!')
-                      }
-                    >
-                      <Bottle color={c.color} size={48} />
-                      <span className="swatch-mark">
-                        {!available ? '🔒' : p.color === c.id ? '✓' : ''}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+              <SupplyStrip kind="color" selected={p.color}>
+                {[...COLORS]
+                  .sort(
+                    (a, b) =>
+                      Number(kit.colors.some((c) => c.id === b.id)) -
+                      Number(kit.colors.some((c) => c.id === a.id)),
+                  )
+                  .map((c) => {
+                    const available = kit.colors.some((a) => a.id === c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        className={`swatch ${p.color === c.id ? 'selected' : ''} ${available ? '' : 'locked'}`}
+                        aria-label={`${c.name}${available ? '' : ' · locked'}`}
+                        aria-pressed={p.color === c.id}
+                        onClick={() =>
+                          available
+                            ? p.setColor(c.id)
+                            : p.message('Serve customers to earn stars and unlock this polish!')
+                        }
+                      >
+                        <Bottle color={c.color} size={48} />
+                        <span className="swatch-mark">
+                          {!available ? '🔒' : p.color === c.id ? '✓' : ''}
+                        </span>
+                      </button>
+                    );
+                  })}
+              </SupplyStrip>
             )}
             <label className="brush-control">
               Brush size{' '}
@@ -107,22 +121,24 @@ export function ToolRack(p: Props) {
               />
               <span>{p.brush < 0.1 ? 'Small' : p.brush < 0.18 ? 'Medium' : 'Big'}</span>
             </label>
-            <div className="action-pair">
-              <button
-                onClick={() =>
-                  p.edit({
-                    ...p.nail,
-                    cleaned: true,
-                    baseColorId: p.color,
-                    fillColorId: p.color,
-                    strokes: [],
-                  })
-                }
-              >
-                Fill this nail
-              </button>
-              <button onClick={p.fillAll}>Color all five</button>
-            </div>
+            {p.tool === 'brush' && (
+              <div className="action-pair">
+                <button
+                  onClick={() =>
+                    p.edit({
+                      ...p.nail,
+                      cleaned: true,
+                      baseColorId: p.color,
+                      fillColorId: p.color,
+                      strokes: [],
+                    })
+                  }
+                >
+                  Fill this nail
+                </button>
+                <button onClick={p.fillAll}>Color all five</button>
+              </div>
+            )}
             {p.tool === 'eraser' && (
               <p className="little-note">Rub away polish. Patterns and decorations stay.</p>
             )}
@@ -142,49 +158,54 @@ export function ToolRack(p: Props) {
                 {unlocked.length}/{library.length}
               </span>
             </div>
-            <div className="decoration-grid">
-              {library.map((item) => {
-                const available = unlocked.some((a) => a.id === item.id);
-                return (
-                  <button
-                    key={item.id}
-                    className={`${p.supply === item.id ? 'selected' : ''} ${available ? '' : 'locked'}`}
-                    aria-label={`${item.name}${available ? '' : ' · locked'}`}
-                    aria-pressed={p.supply === item.id}
-                    onClick={() => {
-                      if (!available) {
-                        p.message('More stars, more little treasures!');
-                        return;
-                      }
-                      p.setSupply(item.id);
-                      if (p.tool === 'pattern') p.edit({ ...p.nail, patternId: item.id });
-                    }}
-                  >
-                    {p.tool === 'sticker' ? (
-                      <Icon id={item.id} size={48} />
-                    ) : p.tool === 'gem' ? (
-                      <span className="gem-preview" style={{ background: item.color }} />
-                    ) : (
-                      <div className="pattern-tile">
-                        <NailCanvas
-                          nail={{
-                            ...p.nail,
-                            decorations: [],
-                            strokes: [],
-                            cleaned: true,
-                            fillColorId: p.color,
-                            patternId: item.id,
-                          }}
-                          label={item.name}
-                        />
-                      </div>
-                    )}
-                    <small>{item.name}</small>
-                    {!available && <span className="lock-mark">♧</span>}
-                  </button>
-                );
-              })}
-            </div>
+            <SupplyStrip kind="decoration" selected={p.supply}>
+              {[...library]
+                .sort(
+                  (a, b) =>
+                    Number(unlocked.some((c) => c.id === b.id)) -
+                    Number(unlocked.some((c) => c.id === a.id)),
+                )
+                .map((item) => {
+                  const available = unlocked.some((a) => a.id === item.id);
+                  return (
+                    <button
+                      key={item.id}
+                      className={`${p.supply === item.id ? 'selected' : ''} ${available ? '' : 'locked'}`}
+                      aria-label={`${item.name}${available ? '' : ' · locked'}`}
+                      aria-pressed={p.supply === item.id}
+                      onClick={() => {
+                        if (!available) {
+                          p.message('More stars, more little treasures!');
+                          return;
+                        }
+                        p.setSupply(item.id);
+                      }}
+                    >
+                      {p.tool === 'sticker' ? (
+                        <Icon id={item.id} size={48} />
+                      ) : p.tool === 'gem' ? (
+                        <span className="gem-preview" style={{ background: item.color }} />
+                      ) : (
+                        <div className="pattern-tile">
+                          <NailCanvas
+                            nail={{
+                              ...p.nail,
+                              decorations: [],
+                              strokes: [],
+                              cleaned: true,
+                              fillColorId: p.color,
+                              patternId: item.id,
+                            }}
+                            label={item.name}
+                          />
+                        </div>
+                      )}
+                      <small>{item.name}</small>
+                      {!available && <span className="lock-mark">♧</span>}
+                    </button>
+                  );
+                })}
+            </SupplyStrip>
             {p.tool === 'pattern' ? (
               <div className="action-pair">
                 <button
@@ -233,22 +254,21 @@ export function ToolRack(p: Props) {
           </>
         )}
         {p.tool === 'clean' && (
-          <div className="prep-kit">
-            <div className="soap-illustration" aria-hidden="true">
-              ◌<span>✧</span>
-            </div>
-            <h3>A fresh little start</h3>
-            <p>Swipe over a nail to clean it. Then choose a shape you love.</p>
-            <button className="full-width" onClick={() => p.edit({ ...p.nail, cleaned: true })}>
-              {p.nail.cleaned ? 'Clean again' : 'Clean this nail'}
-            </button>
-          </div>
+          <ManicurePrep
+            nail={p.nail}
+            clean={() => p.edit({ ...p.nail, cleaned: true })}
+            shape={p.changeShape}
+            skin={p.skin}
+            setSkin={p.setSkin}
+            isFree={p.isFree}
+            paint={() => p.setTool('brush')}
+          />
         )}
         {p.tool === 'move' && (
           <div className="prep-kit">
             <span className="big-symbol">↔</span>
             <h3>Make it just right</h3>
-            <p>Tap a decoration on the big nail, then drag it. You can also pick one below.</p>
+            <p>Pick an item, then use the arrows or drag it on your nail.</p>
             <div className="decoration-picker">
               {p.nail.decorations.map((d, i) => (
                 <button
@@ -294,6 +314,42 @@ export function ToolRack(p: Props) {
             >
               + Bigger
             </button>
+            {nudges.map(({ direction, dx, dy, icon }) => (
+              <button
+                key={direction}
+                disabled={!p.selected}
+                aria-label={`Move decoration ${direction}`}
+                onClick={() =>
+                  p.edit({
+                    ...p.nail,
+                    decorations: p.nail.decorations.map((d) =>
+                      d.id === p.selected
+                        ? {
+                            ...d,
+                            x: Math.max(0, Math.min(1, d.x + dx)),
+                            y: Math.max(0, Math.min(1, d.y + dy)),
+                          }
+                        : d,
+                    ),
+                  })
+                }
+              >
+                {icon}
+              </button>
+            ))}
+            <button
+              disabled={!p.selected}
+              onClick={() =>
+                p.edit({
+                  ...p.nail,
+                  decorations: p.nail.decorations.map((d) =>
+                    d.id === p.selected ? { ...d, x: 0.5, y: 0.5 } : d,
+                  ),
+                })
+              }
+            >
+              Center item
+            </button>
             <button disabled={!p.selected} onClick={p.rotate}>
               ↻ Rotate
             </button>
@@ -302,47 +358,6 @@ export function ToolRack(p: Props) {
             </button>
           </div>
         )}
-        <details className="shape-settings">
-          <summary>Nail shapes &amp; skin tones</summary>
-          <div className="shape-buttons">
-            {SHAPES.map((s) => (
-              <button
-                key={s.id}
-                aria-pressed={p.nail.shape === s.id}
-                onClick={() => p.changeShape(s.id)}
-              >
-                <span className="shape-tile">
-                  <NailCanvas
-                    nail={{
-                      ...p.nail,
-                      shape: s.id,
-                      decorations: [],
-                      strokes: [],
-                      cleaned: true,
-                      patternId: null,
-                    }}
-                    label={`${s.name} shape`}
-                  />
-                </span>
-                {s.name}
-              </button>
-            ))}
-          </div>
-          {p.isFree && (
-            <div className="skin-tones" aria-label="Hand skin tone">
-              {SKINS.map((s, i) => (
-                <button
-                  key={s}
-                  className={p.skin === s ? 'selected' : ''}
-                  style={{ background: s }}
-                  aria-label={`Skin tone ${i + 1}`}
-                  aria-pressed={p.skin === s}
-                  onClick={() => p.setSkin(s)}
-                />
-              ))}
-            </div>
-          )}
-        </details>
       </div>
     </aside>
   );

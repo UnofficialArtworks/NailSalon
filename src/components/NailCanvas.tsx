@@ -25,6 +25,7 @@ export function NailCanvas({
   label = 'Nail painting area',
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null),
+    cursor = useRef<HTMLSpanElement>(null),
     active = useRef<{
       id: number;
       stroke: Stroke;
@@ -58,6 +59,7 @@ export function NailCanvas({
         canvas.height,
         selected,
       );
+      sizeCursor();
     }
     const observer = new ResizeObserver(render);
     observer.observe(canvas);
@@ -67,9 +69,10 @@ export function NailCanvas({
       cancelAnimationFrame(frame.current);
       frame.current = 0;
     };
-  }, [nail, selected]);
+  }, [nail, selected, brush, tool]);
   useEffect(() => {
     const flush = () => {
+      if (cursor.current) cursor.current.style.display = 'none';
       const a = active.current;
       if (!a) return;
       active.current = null;
@@ -89,6 +92,22 @@ export function NailCanvas({
       window.removeEventListener('blur', flush);
     };
   }, []);
+  function sizeCursor() {
+    if (!cursor.current || !ref.current) return;
+    const diameter =
+      (active.current?.stroke.width ?? brush) * ref.current.getBoundingClientRect().width;
+    cursor.current.style.width = cursor.current.style.height = `${diameter}px`;
+  }
+  function pointCursor(e: ReactPointerEvent<HTMLCanvasElement>) {
+    if (!cursor.current || !onChange || (tool !== 'brush' && tool !== 'eraser')) return;
+    if (active.current && active.current.id !== e.pointerId) return;
+    if (e.pointerType === 'touch' && !active.current) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    sizeCursor();
+    cursor.current.style.display = 'block';
+    cursor.current.style.left = `${e.clientX - r.left}px`;
+    cursor.current.style.top = `${e.clientY - r.top}px`;
+  }
   function position(event: ReactPointerEvent<HTMLCanvasElement>): Point {
     const r = event.currentTarget.getBoundingClientRect();
     return {
@@ -167,10 +186,12 @@ export function NailCanvas({
     }
     if (tool === 'clean') next.cleaned = true;
     active.current = { id: e.pointerId, stroke, start: p, moveId, nail: next, source: nail };
+    pointCursor(e);
     dirty.current = tool !== 'move';
     schedule();
   }
   function move(e: ReactPointerEvent<HTMLCanvasElement>) {
+    pointCursor(e);
     const a = active.current;
     if (!a || a.id !== e.pointerId) return;
     const p = position(e);
@@ -190,6 +211,7 @@ export function NailCanvas({
     const a = active.current;
     if (!a || a.id !== e.pointerId) return;
     active.current = null;
+    if (cursor.current && e.pointerType === 'touch') cursor.current.style.display = 'none';
     cancelAnimationFrame(frame.current);
     frame.current = 0;
     if (dirty.current) onChange?.(a.nail);
@@ -198,16 +220,26 @@ export function NailCanvas({
       e.currentTarget.releasePointerCapture(e.pointerId);
   }
   return (
-    <canvas
-      ref={ref}
-      className={onChange ? 'nail-canvas interactive' : 'nail-canvas'}
-      role="img"
-      aria-label={label}
-      onPointerDown={down}
-      onPointerMove={move}
-      onPointerUp={finish}
-      onPointerCancel={finish}
-      onLostPointerCapture={finish}
-    />
+    <span className="nail-surface">
+      <canvas
+        ref={ref}
+        className={onChange ? 'nail-canvas interactive' : 'nail-canvas'}
+        role="img"
+        aria-label={label}
+        data-brush-tool={tool === 'brush' || tool === 'eraser'}
+        onPointerEnter={pointCursor}
+        onPointerLeave={() => {
+          if (cursor.current) cursor.current.style.display = 'none';
+        }}
+        onPointerDown={down}
+        onPointerMove={move}
+        onPointerUp={finish}
+        onPointerCancel={finish}
+        onLostPointerCapture={finish}
+      />
+      {onChange && (tool === 'brush' || tool === 'eraser') && (
+        <span ref={cursor} className="brush-cursor" aria-hidden="true" />
+      )}
+    </span>
   );
 }

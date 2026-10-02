@@ -1,5 +1,5 @@
 import { COLORS, CUSTOMERS, SKINS, suppliesAt } from './catalog';
-import type { Save, Manicure, Request, Wishes, Nail, Point } from './types';
+import type { Save, Manicure, Request, Wishes, Nail, Point, GalleryEntry } from './types';
 export const uid = (): string =>
   crypto.randomUUID?.() ??
   Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
@@ -61,6 +61,14 @@ export function hasManicureEdits(manicure: Manicure): boolean {
       n.patternId !== null ||
       n.strokes.length > 0 ||
       n.decorations.length > 0,
+  );
+}
+export function designIsSaved(manicure: Manicure, gallery: GalleryEntry[]): boolean {
+  const entries = gallery.filter((entry) => entry.manicure.id === manicure.id);
+  if (!entries.length) return false;
+  const nails = JSON.stringify(manicure.nails);
+  return entries.some(
+    ({ manicure: saved }) => saved.skin === manicure.skin && JSON.stringify(saved.nails) === nails,
   );
 }
 export function scoreRequest(manicure: Manicure, request: Request): Wishes {

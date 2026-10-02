@@ -1,7 +1,9 @@
+import { skipPreparation } from './helpers';
 import { test, expect, type Page } from '@playwright/test';
 async function welcome(page: Page) {
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
 }
 async function saved(page: Page) {
   return page.evaluate(async () => {
@@ -22,6 +24,7 @@ async function saved(page: Page) {
 test('customer manicure awards wishes and cannot claim twice', async ({ page }) => {
   await welcome(page);
   await page.getByRole('button', { name: '☆ Customers', exact: true }).click();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Color all five', exact: true }).click();
   await page.getByRole('button', { name: 'Heart', exact: true }).first().click();
   await page.getByRole('button', { name: 'Place in the middle' }).click();
@@ -52,7 +55,7 @@ test('free-play gallery, PNG export, and editing a copy', async ({ page }) => {
   await page.getByRole('button', { name: 'My gallery' }).click();
   await expect(page.getByText('Little masterpiece 1', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Edit a copy' }).click();
-  await page.getByRole('button', { name: 'Start without saving' }).click();
+  await expect(page.getByRole('dialog', { name: 'Ready for something new?' })).toHaveCount(0);
   await expect(page.getByRole('button', { name: '♡ Free play', exact: true })).toHaveAttribute(
     'aria-pressed',
     'true',

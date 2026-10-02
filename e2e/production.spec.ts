@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { skipPreparation } from './helpers';
 import { createServer, type Server } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
 import { resolve } from 'node:path';
@@ -52,6 +53,7 @@ test('production assets load under a repository subdirectory without external re
   });
   await page.goto(`${origin}/NailSalonGame/`);
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Color all five', exact: true }).click();
   await page.getByRole('button', { name: 'All done!' }).click();
   await expect(page.getByRole('heading', { name: 'Look what you made!' })).toBeVisible();

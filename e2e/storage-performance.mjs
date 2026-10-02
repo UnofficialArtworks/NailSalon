@@ -1,3 +1,4 @@
+import { skipPreparation } from './helpers.ts';
 import { chromium } from 'playwright';
 import { mkdir, writeFile } from 'node:fs/promises';
 import assert from 'node:assert/strict';
@@ -34,6 +35,7 @@ try {
   });
   await page.goto('http://127.0.0.1:4173');
   await page.getByRole('button', { name: 'Let’s create!' }).click();
+  await skipPreparation(page);
   const bytes = await page.evaluate(async () => {
     const { createSave } = await import('/src/game/rules.ts');
     const { openDatabase, writeSave } = await import('/src/storage/database.ts');
@@ -61,6 +63,7 @@ try {
     return new Blob([JSON.stringify(state)]).size;
   });
   await page.reload();
+  await skipPreparation(page);
   await page.getByRole('button', { name: 'Edit nail 1', exact: true }).click();
   await page.waitForFunction(
     () => window.saveMetrics.pending === 0 && window.saveMetrics.durations.length > 0,

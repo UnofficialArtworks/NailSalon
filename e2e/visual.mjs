@@ -1,3 +1,4 @@
+import { skipPreparation } from './helpers.ts';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
 await mkdir('test-results/visual', { recursive: true });
@@ -7,8 +8,10 @@ const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 await page.goto('http://127.0.0.1:4173');
 await page.getByRole('button', { name: 'Let’s create!' }).click();
+await skipPreparation(page);
 await page.screenshot({ path: 'test-results/visual/desktop.png', fullPage: true });
 await page.getByRole('button', { name: '☆ Customers', exact: true }).click();
+await skipPreparation(page);
 await page.getByRole('button', { name: 'Color all five', exact: true }).click();
 await page.getByRole('button', { name: 'Edit nail 3', exact: true }).click();
 await page.screenshot({ path: 'test-results/visual/paint.png', fullPage: true });

@@ -1,5 +1,5 @@
 import { Finger } from './components/Finger';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { COLORS, CUSTOMERS, MILESTONES, ROOM, STICKERS } from './game/catalog';
 import {
   fillNails,
@@ -9,6 +9,7 @@ import {
   startManicure,
   uid,
   hasManicureEdits,
+  designIsSaved,
 } from './game/rules';
 import { useEditor } from './editor/useEditor';
 import type { GalleryEntry, Manicure, Tool } from './game/types';
@@ -23,11 +24,13 @@ import { Icon, Bottle } from './components/Icon';
 import { Modal } from './components/Modal';
 import { Gallery } from './components/Gallery';
 import { Tutorial } from './components/Tutorial';
+import { TutorialCoach } from './components/TutorialCoach';
+import { useTutorial } from './editor/useTutorial';
 type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
   const [panel, setPanel] = useState<Panel>(null),
-    [tool, setTool] = useState<Tool>('brush'),
+    [tool, setTool] = useState<Tool>('clean'),
     [color, setColor] = useState('color-0'),
     [supply, setSupply] = useState('sticker-0'),
     [brush, setBrush] = useState(0.09),
@@ -36,8 +39,7 @@ export default function App() {
     [picture, setPicture] = useState<string | null>(null),
     [exporting, setExporting] = useState(false),
     [earned, setEarned] = useState(0),
-    [oldStars, setOldStars] = useState(0),
-    [savedReveal, setSavedReveal] = useState(false);
+    [oldStars, setOldStars] = useState(0);
   const {
     nail,
     selectedNail,
@@ -55,9 +57,18 @@ export default function App() {
   } = useEditor(save, setSave);
   const pictureRef = useRef<string | null>(null);
   pictureRef.current = picture;
+  const savedReveal = useMemo(
+    () => designIsSaved(save.active, save.gallery),
+    [save.active.nails, save.active.skin, save.active.id, save.gallery],
+  );
+  const guide = useTutorial(save.active, zoom, tool, panel === 'reveal', savedReveal);
   useEffect(() => {
-    setSavedReveal(false);
-  }, [save.active.id]);
+    if (ready) setTool(hasManicureEdits(save.active) ? 'brush' : 'clean');
+  }, [ready, save.active.id]);
+  function dismissTutorial() {
+    setPanel(null);
+    setSave((s) => ({ ...s, settings: { ...s.settings, tutorialSeen: true } }));
+  }
   useEffect(() => {
     if (ready && !save.settings.tutorialSeen && !invalid) setPanel('tutorial');
   }, [ready, save.settings.tutorialSeen, invalid]);
@@ -98,21 +109,21 @@ export default function App() {
       }));
     setPending(null);
     setPanel(null);
-    setTool('brush');
+    setTool(typeof target === 'string' ? 'clean' : 'brush');
     sound();
   }
   function requestBegin(target: 'free' | 'customer' | GalleryEntry) {
-    if (hasManicureEdits(m)) setPending(target);
+    if (hasManicureEdits(m) && !savedReveal) setPending(target);
     else begin(target);
   }
   function gallerySave() {
+    if (savedReveal) return true;
     const result = saveToGallery(save);
     if (result.full) {
       setToast('Your gallery is full. Open My gallery and remove a design to make room.');
       return false;
     }
     setSave(result.save);
-    setSavedReveal(true);
     setToast('Saved to your gallery. A tiny masterpiece!');
     sound('reward');
     return true;
@@ -130,7 +141,6 @@ export default function App() {
       setOldStars(save.stars);
       setEarned(0);
     }
-    setSavedReveal(false);
     setPanel('reveal');
     sound('reward');
   }
@@ -259,6 +269,30 @@ export default function App() {
             </div>
           )}
         </div>
+      )}
+      {guide.step !== null && panel === null && (
+        <TutorialCoach
+          step={guide.step}
+          stop={guide.stop}
+          next={guide.next}
+          act={() => {
+            if (guide.step === 0) selectNail(0);
+            if (guide.step === 1) {
+              setTool('clean');
+              setZoom(true);
+            }
+            if (guide.step === 2) {
+              setTool('brush');
+              setZoom(true);
+            }
+            if (guide.step === 3) {
+              setTool('sticker');
+              setSupply('sticker-0');
+              setZoom(true);
+            }
+            if (guide.step === 4) finish();
+          }}
+        />
       )}
       <main className="salon-layout">
         <aside className="salon-sidebar">
@@ -421,7 +455,7 @@ export default function App() {
                   >
                     ← Back to hand
                   </button>
-                  <Finger skin={m.skin} shape={nail.shape}>
+                  <Finger skin={m.skin}>
                     <NailCanvas
                       key={`${m.id}-${selectedNail}`}
                       nail={nail}
@@ -559,8 +593,12 @@ export default function App() {
         >
           <Tutorial
             onDone={() => {
-              setPanel(null);
-              setSave((s) => ({ ...s, settings: { ...s.settings, tutorialSeen: true } }));
+              dismissTutorial();
+              guide.start();
+            }}
+            onSkip={() => {
+              dismissTutorial();
+              guide.stop();
             }}
           />
         </Modal>
@@ -623,6 +661,11 @@ export default function App() {
       {panel === 'reveal' && (
         <Modal title="Look what you made!" onClose={() => setPanel(null)}>
           <div className="reveal">
+            {guide.step !== null && (
+              <p className="guide-save-tip">
+                Save to gallery keeps your masterpiece. Save picture makes an image you can keep!
+              </p>
+            )}
             <div className="reveal-stars">✧ ✦ ✧</div>
             <Hand manicure={m} small />
             {earned > 0 ? (

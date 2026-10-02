@@ -1,3 +1,4 @@
+import { skipPreparation } from './helpers.ts';
 import { chromium } from 'playwright';
 const browser = await chromium.launch();
 const page = await browser.newPage({
@@ -6,6 +7,7 @@ const page = await browser.newPage({
 });
 await page.goto('http://127.0.0.1:4173');
 await page.getByRole('button', { name: 'Let’s create!' }).click();
+await skipPreparation(page);
 await page.getByRole('button', { name: 'Edit nail 3', exact: true }).click();
 const canvas = page.getByLabel('Paint nail 3', { exact: true }),
   box = await canvas.boundingBox();
