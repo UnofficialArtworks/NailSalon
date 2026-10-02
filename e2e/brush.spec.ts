@@ -38,7 +38,11 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
               patternId: null,
             };
             renderNail(ctx, nail, width, height);
-            const before = ctx.getImageData(0, 0, width, height).data;
+            const before = Array.from(ctx.getImageData(0, 0, width, height).data);
+            // NailCanvas resets its bitmap dimensions before each frame. Match
+            // that real rendering lifecycle instead of reusing a native backing store.
+            canvas.width = width;
+            canvas.height = height;
             renderNail(
               ctx,
               {
