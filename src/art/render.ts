@@ -126,6 +126,11 @@ export function renderNail(
     ctx.fillStyle = colorOf(nail.fillColorId);
     ctx.fillRect(0, 0, 1, 1);
   }
+  // Stroke width is measured against nail width. Use uniform scaling for the
+  // brush so round taps and caps match the circular cursor on tall nails too.
+  ctx.save();
+  const aspect = width / height;
+  ctx.scale(1, aspect);
   for (const s of nail.strokes) {
     ctx.strokeStyle = s.erase ? '#fff4e8' : colorOf(s.colorId);
     ctx.fillStyle = ctx.strokeStyle;
@@ -133,14 +138,17 @@ export function renderNail(
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
     ctx.beginPath();
-    s.points.forEach((p, i) => (i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)));
+    s.points.forEach((p, i) =>
+      i === 0 ? ctx.moveTo(p.x, p.y / aspect) : ctx.lineTo(p.x, p.y / aspect),
+    );
     ctx.stroke();
     if (s.points.length === 1) {
       ctx.beginPath();
-      ctx.arc(s.points[0].x, s.points[0].y, s.width / 2, 0, Math.PI * 2);
+      ctx.arc(s.points[0].x, s.points[0].y / aspect, s.width / 2, 0, Math.PI * 2);
       ctx.fill();
     }
   }
+  ctx.restore();
   if (nail.patternId) pattern(ctx, nail.patternId);
   for (const d of nail.decorations) drawDecoration(ctx, d, width / height);
   if (!nail.cleaned && !nail.baseColorId && nail.strokes.length === 0) {

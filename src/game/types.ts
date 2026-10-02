@@ -7,6 +7,7 @@ export interface Point {
 export interface Stroke {
   points: Point[];
   colorId: string;
+  /** Brush diameter as a fraction of nail width; round in rendered pixels. */
   width: number;
   erase: boolean;
 }
