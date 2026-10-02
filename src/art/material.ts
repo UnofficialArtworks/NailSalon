@@ -83,7 +83,9 @@ export function nailShine(
   if (surface) {
     surface.width = width;
     surface.height = height;
-    surface.getContext('2d')!.drawImage(ctx.canvas, 0, 0);
+    // Materialize the pre-shine pixels. WebKit can defer canvas-to-canvas
+    // copies, allowing the later shine pass to leak into a matte snapshot.
+    surface.getContext('2d')!.putImageData(ctx.getImageData(0, 0, width, height), 0, 0);
   }
   const shineCtx = ctx;
   const shine = shineCtx.createLinearGradient(0, 0, 1, 0);

@@ -155,6 +155,7 @@ test('material rendering is deterministic and leaves bare and erased areas natur
       const sample = (pixels: number[], x: number, y: number) =>
         pixels.slice((y * 240 + x) * 4, (y * 240 + x) * 4 + 4);
       return {
+        finish,
         same: first.every((v, i) => v === second[i]),
         bare: sample(first, 120, 280),
         expectedBare: sample(baseline, 120, 280),
@@ -171,6 +172,8 @@ test('material rendering is deterministic and leaves bare and erased areas natur
     expect(variant.bare).toEqual(variant.expectedBare);
     expect(variant.erased).toEqual(variant.expectedErased);
     expect(variant.painted).not.toEqual(variant.expectedErased);
-    expect(variant.painted).toEqual(variant.filled);
+    expect(variant.painted, `${variant.finish}: brush and fill material must match`).toEqual(
+      variant.filled,
+    );
   }
 });
