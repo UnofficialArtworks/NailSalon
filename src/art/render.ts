@@ -1,4 +1,4 @@
-import { backdropSvg, handSkinSvg, sceneSvg } from './photoScene';
+import { backdropSvg, handSkinSvg, photoOverlaySvg, sceneSvg } from './photoScene';
 import { photoSettings } from '../game/photo';
 import { NAIL_BOXES } from './handGeometry';
 export { HAND_PATH, NAIL_BOXES } from './handGeometry';
@@ -273,6 +273,20 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
     ctx.restore();
   });
   ctx.restore();
+  const overlay = photoOverlaySvg(photoSettings(m));
+  if (overlay) {
+    const image = new Image();
+    const overlayUrl = URL.createObjectURL(
+      new Blob([sceneSvg(overlay)], { type: 'image/svg+xml' }),
+    );
+    try {
+      image.src = overlayUrl;
+      await image.decode();
+      ctx.drawImage(image, 0, 0, c.width, c.height);
+    } finally {
+      URL.revokeObjectURL(overlayUrl);
+    }
+  }
   return new Promise((resolve, reject) =>
     c.toBlob(
       (b) => (b ? resolve(b) : reject(new Error('Picture could not be created.'))),

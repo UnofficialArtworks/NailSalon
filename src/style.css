@@ -2130,6 +2130,50 @@ h3 {
   padding: 0;
   margin: 0 0 14px;
 }
+.photo-overlay {
+  pointer-events: none;
+}
+.photo-category-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.photo-category-tabs button {
+  flex: 1;
+  min-width: 48px;
+  min-height: 64px;
+  padding: 6px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.photo-category-tabs span {
+  font-size: 24px;
+}
+.photo-category-tabs button[aria-pressed='true'] {
+  background: #ffe492;
+  border-color: #d59237;
+}
+.photo-choice-picture {
+  width: 48px;
+  height: 60px;
+  border-radius: 6px;
+}
+.photo-choices .photo-lock {
+  color: #794568;
+  font-size: 11px;
+}
+.photo-choices button:disabled {
+  opacity: 0.75;
+}
+.photo-reward-hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #794568;
+}
 .photo-options legend {
   font-weight: 700;
   padding: 0 0 8px;
@@ -2143,7 +2187,7 @@ h3 {
 }
 .photo-choices button {
   flex: 1;
-  min-width: 64px;
+  min-width: 85px;
   min-height: 66px;
   padding: 7px;
   font-size: 12px;

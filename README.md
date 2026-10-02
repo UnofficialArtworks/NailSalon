@@ -46,6 +46,8 @@ Chrome decides when to show automatic install promotion; a pop-up is not guarant
 
 ## Development and checks
 
+The photo studio includes seven backdrops, four frames, four prop choices, four bracelet choices and four ring choices (including "none"). Sunset, postcard, flowers and a ribbon bracelet are available immediately alongside the original choices. Customer stars unlock the star ring at 6, rainbow backdrop/frame at 12, shells at 18, starlight backdrop/sparkle frame at 24, and confetti at 30. These rewards are added to the existing milestones without changing earlier supply rewards or spending stars. Photos retain their choices in the scrapbook and PNG export; old saves default to no frame or props.
+
 ```sh
 npm run typecheck
 npm run lint

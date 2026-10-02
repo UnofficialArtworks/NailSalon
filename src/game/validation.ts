@@ -1,5 +1,6 @@
 import { COLORS, PATTERNS, STICKERS, GEMS, SHAPES, SKINS, CUSTOMERS, ROOM } from './catalog';
 import type { Save } from './types';
+import { validPhoto } from './photo';
 const object = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 const number = (v: unknown, min = 0, max = 1) =>
@@ -65,11 +66,7 @@ function manicure(v: unknown): boolean {
     !['free', 'customer'].includes(String(v.mode)) ||
     !SKINS.includes(String(v.skin)) ||
     typeof v.rewarded !== 'boolean' ||
-    (v.photo !== undefined &&
-      (!object(v.photo) ||
-        !['cream', 'candy', 'ocean', 'garden'].includes(String(v.photo.backdrop)) ||
-        !['gold', 'pearls', 'none'].includes(String(v.photo.bracelet)) ||
-        !['none', 'heart', 'flower'].includes(String(v.photo.ring)))) ||
+    (v.photo !== undefined && !validPhoto(v.photo)) ||
     !Array.isArray(v.nails) ||
     v.nails.length !== 5 ||
     !v.nails.every(nail)

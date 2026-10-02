@@ -6,12 +6,15 @@ test('photo choices, names and favorites survive reload and editing a copy', asy
   await page.getByRole('button', { name: 'Skip tutorial', exact: true }).click();
   await page.getByRole('button', { name: 'All done!' }).click();
   await page.getByRole('button', { name: 'Ocean dreams', exact: true }).click();
+  await page.getByRole('button', { name: 'Bracelets', exact: true }).click();
   await page.getByRole('button', { name: 'Pearls', exact: true }).click();
+  await page.getByRole('button', { name: 'Rings', exact: true }).click();
   await page.getByRole('button', { name: 'Heart ring', exact: true }).click();
   await page.getByRole('button', { name: 'Replay reveal' }).click();
   await page.getByRole('button', { name: 'Save to gallery', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Saved ✓' })).toBeDisabled();
   // A different photo is a new save even when the nail art stays the same.
+  await page.getByRole('button', { name: 'Backdrops', exact: true }).click();
   await page.getByRole('button', { name: 'Garden picnic', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Save to gallery', exact: true })).toBeEnabled();
   await page.getByRole('button', { name: 'Ocean dreams', exact: true }).click();
@@ -36,6 +39,7 @@ test('photo choices, names and favorites survive reload and editing a copy', asy
     'aria-pressed',
     'true',
   );
+  await page.getByRole('button', { name: 'Rings', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Heart ring' })).toHaveAttribute(
     'aria-pressed',
     'true',
@@ -51,6 +55,7 @@ test('PNG reproduces the photo scene and phone controls stay inside the dialog',
   await page.getByRole('button', { name: 'Skip tutorial', exact: true }).click();
   await page.getByRole('button', { name: 'All done!' }).click();
   await page.getByRole('button', { name: 'Candy clouds', exact: true }).click();
+  await page.getByRole('button', { name: 'Rings', exact: true }).click();
   await page.getByRole('button', { name: 'Flower ring', exact: true }).click();
   const overflow = await page.locator('dialog').evaluate((d) => d.scrollWidth > d.clientWidth);
   expect(overflow).toBe(false);

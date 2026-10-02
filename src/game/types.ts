@@ -50,9 +50,11 @@ export interface Manicure {
   photo?: PhotoSettings;
 }
 export interface PhotoSettings {
-  backdrop: 'cream' | 'candy' | 'ocean' | 'garden';
-  bracelet: 'gold' | 'pearls' | 'none';
-  ring: 'none' | 'heart' | 'flower';
+  backdrop: 'cream' | 'candy' | 'ocean' | 'garden' | 'sunset' | 'rainbow' | 'starlight';
+  bracelet: 'gold' | 'pearls' | 'none' | 'ribbon';
+  ring: 'none' | 'heart' | 'flower' | 'star';
+  frame?: 'none' | 'postcard' | 'rainbow' | 'sparkle';
+  props?: 'none' | 'flowers' | 'shells' | 'party';
 }
 export interface Supply {
   id: string;

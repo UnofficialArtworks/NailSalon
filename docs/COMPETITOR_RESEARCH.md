@@ -1,6 +1,18 @@
 # Nail Salon: competitor research and next-release discussion
 
-Research date: October 2, 2026. Status: research complete. Chris selected **playful creative studio** as the direction. Feature scope below remains a proposal for discussion, not an approved implementation specification.
+## Follow-up review: photo customization
+
+Revisited the original findings and the official Poki, CrazyGames and Budge descriptions on October 2, 2026. Photo finishing is still a strong fit: [Nails DIY](https://poki.com/en/g/nails-diy-manicure-master) explicitly ends with rings and a photo shoot. The expanded local studio adds backdrop/frame/prop choices and jewelry, with a mix of immediate access and existing star milestone rewards. All original photo choices remain free. Shared foreground SVG artwork appears in both gallery previews and PNG export, and old photo saves default to no frame or props.
+
+Most of the earlier studio recommendations have now shipped: stages, lengths, materials, supply collections, copying, preparation feedback, occasion cards/reactions, scrapbook names/favorites and creative prompts. Remaining opportunities, in recommended order:
+
+1. **Brush-through stencils.** [CrazyGames' Nail Salon](https://www.crazygames.com/game/girls-nail-salon---nail-games) describes stencil painting. An optional heart/star/flower mask could let a child brush freely and then lift the stencil for a clean result. Keep tap-to-fill, undo, and normal painting available. This would add a creative action distinct from our current one-tap patterns.
+2. **Two-color marble polish.** The same official description includes marble dipping. A small deterministic swirl tool could provide a satisfying reveal and reproducible export. Prototype the interaction and measure it on the actual iPad before expanding it.
+3. **Picture-led inspiration accessible before all unlocks.** Budge's [Hello Kitty Nail Salon](https://budgestudios.com/en/apps/detail/hello-kitty-nail-salon/) combines unique designs with challenges. We already offer optional prompts after all milestones; a separate small starter inspiration deck could help children who do not know what to create, using only their available supplies and no grading.
+
+These are recommendations, not additional implemented features. Do not add monetization, competitive ratings or streaks. The most valuable validation still missing is a short child playtest and physical iPad Safari testing.
+
+Research date: October 2, 2026. Status: research complete. Chris selected **playful creative studio** as the direction. The original findings below record the initial proposals; the follow-up above distinguishes shipped features from remaining recommendations.
 
 ## Main finding
 

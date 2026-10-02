@@ -1,4 +1,5 @@
 import type { Customer, Supply, Shape } from './types';
+import { PHOTO_CHOICES } from './photo';
 const palette = [
   ['Petal pink', '#f597b7'],
   ['Cherry pop', '#e94f6d'],
@@ -168,7 +169,7 @@ export const ROOM = [
   { id: 'accessory-2', name: 'Lucky star', color: '#f3c750' },
 ];
 type Reward = {
-  kind: 'colors' | 'patterns' | 'stickers' | 'gems' | 'room';
+  kind: 'colors' | 'patterns' | 'stickers' | 'gems' | 'room' | 'photo';
   id: string;
   name: string;
 };
@@ -181,7 +182,18 @@ const rewards: Reward[] = [
 ];
 export const MILESTONES = Array.from({ length: 12 }, (_, i) => ({
   stars: (i + 1) * 3,
-  rewards: rewards.filter((_, j) => j % 12 === i),
+  rewards: [
+    ...rewards.filter((_, j) => j % 12 === i),
+    ...Object.entries(PHOTO_CHOICES).flatMap(([category, choices]) =>
+      choices
+        .filter((c) => c.stars === (i + 1) * 3)
+        .map((c) => ({
+          kind: 'photo' as const,
+          id: `photo-${category}-${c.id}`,
+          name: c.name,
+        })),
+    ),
+  ],
 }));
 export function suppliesAt(stars: number) {
   const earned = MILESTONES.filter((m) => m.stars <= stars).flatMap((m) =>

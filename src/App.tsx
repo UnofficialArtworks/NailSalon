@@ -728,6 +728,7 @@ export default function App() {
             )}
             <PhotoStudio
               manicure={m}
+              stars={save.stars}
               onChange={(photo) => setSave((s) => ({ ...s, active: { ...s.active, photo } }))}
             />
             {MILESTONES.filter((t) => t.stars > oldStars && t.stars <= save.stars).map((t) => (
