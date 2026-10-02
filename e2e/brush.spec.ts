@@ -57,6 +57,10 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
               right = -1,
               top = height,
               bottom = -1;
+            const outsideSamples: { x: number; y: number; before: number[]; after: number[] }[] =
+              [];
+            const expectedLeft = Math.min(...points.map((p) => p.x)) * width - (width * size) / 2;
+            const expectedRight = Math.max(...points.map((p) => p.x)) * width + (width * size) / 2;
             for (let y = 0; y < height; y++)
               for (let x = 0; x < width; x++) {
                 const i = (y * width + x) * 4;
@@ -67,6 +71,17 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
                   right = Math.max(right, x);
                   top = Math.min(top, y);
                   bottom = Math.max(bottom, y);
+                  if (
+                    (x < expectedLeft - 2 || x > expectedRight + 2) &&
+                    outsideSamples.length < 6
+                  ) {
+                    outsideSamples.push({
+                      x,
+                      y,
+                      before: before.slice(i, i + 4),
+                      after: Array.from(after.slice(i, i + 4)),
+                    });
+                  }
                 }
               }
             const diameter = width * size;
@@ -76,6 +91,7 @@ test('paint and eraser footprints remain round in every nail aspect ratio', asyn
               size,
               erase,
               points,
+              outsideSamples,
               actualWidth: right - left + 1,
               actualHeight: bottom - top + 1,
               expectedWidth:
