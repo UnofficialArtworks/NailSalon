@@ -1530,3 +1530,256 @@ h3 {
     font-size: 10px;
   }
 }
+
+/* Creative studio: artwork first, with pictured stages and coordinated supplies. */
+.studio-stages {
+  display: flex;
+  gap: 10px;
+  margin: 0 4px 14px;
+}
+.studio-stages button {
+  flex: 1;
+  min-height: 62px;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(#fff, #f7deff);
+  border-radius: 22px;
+}
+.studio-stages button[aria-pressed='true'] {
+  background: linear-gradient(#fff9b8, #ffe979);
+  border-color: #db66c1;
+  box-shadow: 0 3px 0 #cb76be;
+}
+.studio-stages svg {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+.studio-stages span {
+  text-align: left;
+}
+.studio-stages strong,
+.studio-stages small {
+  display: block;
+}
+.studio-stages small {
+  font-size: 10px;
+  margin-top: 3px;
+  font-weight: normal;
+}
+.salon-layout {
+  grid-template-rows: minmax(460px, calc(100dvh - 400px)) auto;
+}
+.big-nail {
+  aspect-ratio: 240/515;
+  height: min(560px, calc(100% + 60px));
+}
+.nail-selector button {
+  height: 64px;
+  flex-direction: column;
+  gap: 2px;
+}
+.nail-selector .nav-nail-art {
+  width: 26px;
+  height: 38px;
+  display: block;
+  background: none;
+  border: 0;
+  border-radius: 0;
+}
+.nail-selector small {
+  font-size: 10px;
+}
+.workspace-bottom {
+  gap: 8px;
+}
+.workspace-bottom > span {
+  flex: 1;
+}
+.collection-tabs {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  overflow: auto;
+  padding: 3px 2px 6px;
+}
+.collection-tabs button {
+  flex-shrink: 0;
+  min-height: 48px;
+  gap: 5px;
+  font-size: 12px;
+  border-radius: 18px;
+}
+.collection-tabs button[aria-pressed='true'],
+.finish-picker button[aria-pressed='true'],
+.length-buttons button[aria-pressed='true'],
+.copy-nails button[aria-pressed='true'] {
+  border-color: #c338ad;
+  background-color: #fff4b2;
+  box-shadow:
+    0 0 0 2px #fff,
+    0 3px 0 #c778cb;
+}
+.finish-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.finish-picker button {
+  min-height: 48px;
+  gap: 8px;
+  font-size: 12px;
+}
+.finish-sample {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 32px;
+  border-radius: 45% 45% 25% 25%;
+  background: linear-gradient(110deg, #fff9, transparent), var(--polish);
+  color: white;
+  font-size: 20px;
+  border: 1px solid #fff;
+}
+.finish-sample.glitter {
+  background:
+    radial-gradient(circle, #fff 1px, transparent 2px) 0 0/5px 5px,
+    var(--polish);
+}
+.finish-sample.pearl {
+  background: linear-gradient(110deg, #84eeff66, #fff9, #e5a3ff99, #fff3aa77), var(--polish);
+}
+.length-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.length-buttons button {
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 72px;
+}
+.length-picture {
+  display: block;
+  width: 22px;
+  background: linear-gradient(110deg, #fff, #ffc6e6);
+  border: 2px solid #d881b6;
+  border-radius: 45% 45% 25% 25%;
+}
+.pattern-colors {
+  display: flex;
+  gap: 8px;
+  overflow: auto;
+  width: 100%;
+  padding: 5px;
+}
+.pattern-colors button {
+  min-width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+}
+.pattern-colors button[aria-pressed='true'] {
+  outline: 3px solid #a5249a;
+  outline-offset: 1px;
+}
+.gem-nail-preview {
+  display: block;
+  width: 35px;
+  height: 46px;
+}
+.copy-nails {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 20px 0;
+}
+.copy-nails button {
+  flex-direction: column;
+  padding: 6px;
+  min-width: 48px;
+}
+.copy-preview {
+  display: block;
+  width: 40px;
+  height: 62px;
+}
+@media (min-width: 601px) and (max-width: 900px) {
+  .salon-layout {
+    grid-template-rows: 470px auto;
+  }
+  .tool-tabs {
+    gap: 7px;
+  }
+  .tool-tabs button {
+    width: 56px;
+    min-height: 52px;
+  }
+  .freeplay-art {
+    margin-bottom: 4px;
+  }
+}
+@media (max-width: 600px) {
+  .studio-stages {
+    gap: 5px;
+    margin: 0 0 10px;
+  }
+  .studio-stages button {
+    min-height: 65px;
+    padding: 5px;
+    gap: 2px;
+    flex-direction: column;
+    border-radius: 16px;
+  }
+  .studio-stages svg {
+    width: 26px;
+    height: 26px;
+  }
+  .studio-stages strong {
+    font-size: 10px;
+  }
+  .studio-stages span {
+    text-align: center;
+  }
+  .studio-stages small {
+    display: none;
+  }
+  .salon-layout {
+    grid-template-rows: 425px auto;
+  }
+  .big-nail {
+    height: min(375px, calc(100% + 60px));
+  }
+  .workspace-bottom {
+    flex-wrap: wrap;
+  }
+  .workspace-bottom > span {
+    flex-basis: 100%;
+  }
+  .workspace-bottom > button {
+    max-width: none;
+    font-size: 10px;
+  }
+  .collection-tabs button {
+    font-size: 11px;
+  }
+  .finish-picker {
+    width: 100%;
+  }
+  .finish-picker button {
+    flex: 1;
+    padding: 5px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  .length-buttons {
+    gap: 6px;
+  }
+  .copy-nails {
+    gap: 4px;
+  }
+  .copy-preview {
+    width: 32px;
+    height: 50px;
+  }
+}

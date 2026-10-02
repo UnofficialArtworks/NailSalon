@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { HAND_PATH, NAIL_BOXES } from '../art/render';
 import type { Manicure } from '../game/types';
 import { NailCanvas } from './NailCanvas';
+import { lengthBox } from '../art/length';
 export function Hand({
   manicure,
   selected,
@@ -61,7 +62,7 @@ export function Hand({
         </g>
       </svg>
       {manicure.nails.map((n, i) => {
-        const b = NAIL_BOXES[i],
+        const b = lengthBox(NAIL_BOXES[i], n.length),
           style = {
             left: `${b.x / 4.4}%`,
             top: `${b.y / 5.5}%`,

@@ -1,0 +1,8 @@
+- [x] Shared nail lengths and compatible save settings
+- [x] Materials, pattern color and gem silhouettes
+- [x] Themed supply collections
+- [x] Copy, duplicate and layer controls
+- [x] Workspace and stage navigation
+- [x] Browser/visual verification: 25 unit tests and 108 browser tests passed; typecheck, lint, build and dependency audit passed. Phone, iPad portrait/landscape and desktop screenshots inspected.
+- [x] Prepare publication to the authorized main branch through the existing Pages workflow.
+- [ ] Physical iPad Safari performance check and daughter playtest (requires the user's device).

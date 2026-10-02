@@ -26,9 +26,13 @@ import { Gallery } from './components/Gallery';
 import { Tutorial } from './components/Tutorial';
 import { TutorialCoach } from './components/TutorialCoach';
 import { useTutorial } from './editor/useTutorial';
+import { CopyNails } from './components/CopyNails';
+import { copyNailArt } from './game/studio';
+import { StudioStages } from './components/StudioStages';
 type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
+  const [copying, setCopying] = useState(false);
   const [panel, setPanel] = useState<Panel>(null),
     [tool, setTool] = useState<Tool>('clean'),
     [color, setColor] = useState('color-0'),
@@ -294,6 +298,15 @@ export default function App() {
           }}
         />
       )}
+      <StudioStages
+        tool={tool}
+        select={(t) => {
+          setTool(t);
+          setZoom(true);
+          if (t === 'sticker') setSupply('sticker-0');
+        }}
+        reveal={finish}
+      />
       <main className="salon-layout">
         <aside className="salon-sidebar">
           <div className="mode-switch" aria-label="Game mode">
@@ -455,7 +468,7 @@ export default function App() {
                   >
                     ← Back to hand
                   </button>
-                  <Finger skin={m.skin}>
+                  <Finger skin={m.skin} length={nail.length}>
                     <NailCanvas
                       key={`${m.id}-${selectedNail}`}
                       nail={nail}
@@ -480,14 +493,10 @@ export default function App() {
                           setSelectedDecoration(null);
                         }}
                       >
-                        <span
-                          style={{
-                            background:
-                              COLORS.find((c) => c.id === n.baseColorId)?.color ?? '#ffece0',
-                          }}
-                        >
-                          {i + 1}
+                        <span className="nav-nail-art">
+                          <NailCanvas nail={n} />
                         </span>
+                        <small>{i + 1}</small>
                       </button>
                     ))}
                   </div>
@@ -546,6 +555,7 @@ export default function App() {
                 ? `Selected tool: ${tool === 'brush' ? 'Polish brush' : tool}`
                 : 'Five little nails. Endless possibilities.'}
             </span>
+            <button onClick={() => setCopying(true)}>Copy this nail</button>
             <button onClick={() => requestBegin(m.mode)}>New manicure</button>
           </div>
         </section>
@@ -568,6 +578,7 @@ export default function App() {
           edit={editNail}
           fillAll={() => editNails(fillNails(m, color).nails)}
           changeShape={(shape) => editNails(m.nails.map((n) => ({ ...n, shape })))}
+          changeLength={(length) => editNails(m.nails.map((n) => ({ ...n, length })))}
           skin={m.skin}
           setSkin={(skin) => setSave((s) => ({ ...s, active: { ...s.active, skin } }))}
           isFree={m.mode === 'free'}
@@ -582,6 +593,17 @@ export default function App() {
         <div className="toast" role="status">
           {toast}
         </div>
+      )}
+      {copying && (
+        <CopyNails
+          nails={m.nails}
+          source={selectedNail}
+          close={() => setCopying(false)}
+          apply={(targets, mode) => {
+            editNails(copyNailArt(m.nails, selectedNail, targets, mode));
+            setSelectedDecoration(null);
+          }}
+        />
       )}
       {panel === 'tutorial' && (
         <Modal

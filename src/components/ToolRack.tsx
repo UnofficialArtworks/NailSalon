@@ -1,10 +1,11 @@
 import { COLORS, PATTERNS, STICKERS, GEMS, suppliesAt } from '../game/catalog';
-import type { Nail, Tool, Shape } from '../game/types';
+import type { Nail, Tool, Shape, NailLength } from '../game/types';
+import { COLLECTIONS, duplicateItem, reorderItem } from '../game/studio';
 import { Icon, Bottle } from './Icon';
 import { uid } from '../game/rules';
 import { ToolPicture } from './ToolPicture';
 import { NailCanvas } from './NailCanvas';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { ManicurePrep } from './ManicurePrep';
 import { SupplyStrip } from './SupplyStrip';
 interface Props {
@@ -21,6 +22,7 @@ interface Props {
   edit: (n: Nail) => void;
   fillAll: () => void;
   changeShape: (shape: Shape) => void;
+  changeLength: (length: NailLength) => void;
   skin: string;
   setSkin: (s: string) => void;
   isFree: boolean;
@@ -28,7 +30,7 @@ interface Props {
   rotate: () => void;
   remove: () => void;
   message: (s: string) => void;
-  selectDecoration: (id: string) => void;
+  selectDecoration: (id: string | null) => void;
 }
 const tools: { id: Tool; name: string }[] = [
   { id: 'clean', name: 'Clean' },
@@ -46,6 +48,10 @@ const nudges = [
   { direction: 'right', dx: 0.04, dy: 0, icon: '→' },
 ];
 export function ToolRack(p: Props) {
+  const [collection, setCollection] = useState('all');
+  const theme = COLLECTIONS.find((c) => c.id === collection)!;
+  const filter = (id: string, kind: 'colors' | 'stickers' | 'patterns' | 'gems') =>
+    collection === 'all' || (theme[kind] as readonly number[]).includes(Number(id.split('-')[1]));
   const remembered = useRef<Record<string, string>>({});
   const kit = suppliesAt(p.stars);
   const library = p.tool === 'pattern' ? PATTERNS : p.tool === 'sticker' ? STICKERS : GEMS;
@@ -73,6 +79,20 @@ export function ToolRack(p: Props) {
         ))}
       </div>
       <div className="supplies-area">
+        {['brush', 'pattern', 'sticker', 'gem'].includes(p.tool) && (
+          <div className="collection-tabs" aria-label="Supply collections">
+            {COLLECTIONS.map((c) => (
+              <button
+                key={c.id}
+                aria-pressed={collection === c.id}
+                onClick={() => setCollection(c.id)}
+              >
+                <Icon id={c.icon} size={24} />
+                {c.name}
+              </button>
+            ))}
+          </div>
+        )}
         {(p.tool === 'brush' || p.tool === 'eraser') && (
           <>
             <div className="section-label">
@@ -82,6 +102,7 @@ export function ToolRack(p: Props) {
             {p.tool === 'brush' && (
               <SupplyStrip kind="color" selected={p.color}>
                 {[...COLORS]
+                  .filter((c) => filter(c.id, 'colors'))
                   .sort(
                     (a, b) =>
                       Number(kit.colors.some((c) => c.id === b.id)) -
@@ -139,6 +160,36 @@ export function ToolRack(p: Props) {
                 <button onClick={p.fillAll}>Color all five</button>
               </div>
             )}
+            {p.tool === 'brush' && (
+              <div className="finish-picker" aria-label="Polish finish">
+                {(
+                  [
+                    { id: 'glossy', name: 'Glossy', icon: '◡' },
+                    { id: 'glitter', name: 'Glitter', icon: '✧' },
+                    { id: 'pearl', name: 'Pearlescent', icon: '◉' },
+                  ] as const
+                ).map((f) => (
+                  <button
+                    key={f.id}
+                    aria-label={f.name}
+                    aria-pressed={(p.nail.finish ?? 'glossy') === f.id}
+                    onClick={() => p.edit({ ...p.nail, finish: f.id })}
+                  >
+                    <span
+                      className={`finish-sample ${f.id}`}
+                      style={
+                        {
+                          '--polish': COLORS.find((c) => c.id === p.color)?.color,
+                        } as React.CSSProperties
+                      }
+                    >
+                      {f.icon}
+                    </span>
+                    {f.name}
+                  </button>
+                ))}
+              </div>
+            )}
             {p.tool === 'eraser' && (
               <p className="little-note">Rub away polish. Patterns and decorations stay.</p>
             )}
@@ -160,6 +211,12 @@ export function ToolRack(p: Props) {
             </div>
             <SupplyStrip kind="decoration" selected={p.supply}>
               {[...library]
+                .filter((item) =>
+                  filter(
+                    item.id,
+                    p.tool === 'pattern' ? 'patterns' : p.tool === 'sticker' ? 'stickers' : 'gems',
+                  ),
+                )
                 .sort(
                   (a, b) =>
                     Number(unlocked.some((c) => c.id === b.id)) -
@@ -184,7 +241,30 @@ export function ToolRack(p: Props) {
                       {p.tool === 'sticker' ? (
                         <Icon id={item.id} size={48} />
                       ) : p.tool === 'gem' ? (
-                        <span className="gem-preview" style={{ background: item.color }} />
+                        <span className="gem-nail-preview">
+                          <NailCanvas
+                            nail={{
+                              ...p.nail,
+                              cleaned: true,
+                              fillColorId: null,
+                              baseColorId: null,
+                              strokes: [],
+                              patternId: null,
+                              decorations: [
+                                {
+                                  id: 'preview',
+                                  kind: 'gem',
+                                  supplyId: item.id,
+                                  x: 0.5,
+                                  y: 0.5,
+                                  size: 0.7,
+                                  rotation: 0,
+                                },
+                              ],
+                            }}
+                            label={item.name}
+                          />
+                        </span>
                       ) : (
                         <div className="pattern-tile">
                           <NailCanvas
@@ -207,19 +287,39 @@ export function ToolRack(p: Props) {
                 })}
             </SupplyStrip>
             {p.tool === 'pattern' ? (
-              <div className="action-pair">
-                <button
-                  onClick={() =>
-                    p.edit({
-                      ...p.nail,
-                      patternId: p.supply.startsWith('pattern-') ? p.supply : 'pattern-0',
-                    })
-                  }
-                >
-                  Apply pattern
-                </button>
-                <button onClick={() => p.edit({ ...p.nail, patternId: null })}>No pattern</button>
-              </div>
+              <>
+                <div className="pattern-colors" aria-label="Pattern ink">
+                  <button
+                    aria-label="Pattern color: Original"
+                    aria-pressed={!p.nail.patternColorId}
+                    onClick={() => p.edit({ ...p.nail, patternColorId: null })}
+                  >
+                    Original
+                  </button>
+                  {kit.colors.map((c) => (
+                    <button
+                      key={c.id}
+                      aria-label={`Pattern color: ${c.name}`}
+                      aria-pressed={p.nail.patternColorId === c.id}
+                      style={{ background: c.color }}
+                      onClick={() => p.edit({ ...p.nail, patternColorId: c.id })}
+                    />
+                  ))}
+                </div>
+                <div className="action-pair">
+                  <button
+                    onClick={() =>
+                      p.edit({
+                        ...p.nail,
+                        patternId: p.supply.startsWith('pattern-') ? p.supply : 'pattern-0',
+                      })
+                    }
+                  >
+                    Apply pattern
+                  </button>
+                  <button onClick={() => p.edit({ ...p.nail, patternId: null })}>No pattern</button>
+                </div>
+              </>
             ) : (
               <>
                 <p className="little-note">Tap your nail to place it, or use the button below.</p>
@@ -258,6 +358,7 @@ export function ToolRack(p: Props) {
             nail={p.nail}
             clean={() => p.edit({ ...p.nail, cleaned: true })}
             shape={p.changeShape}
+            length={p.changeLength}
             skin={p.skin}
             setSkin={p.setSkin}
             isFree={p.isFree}
@@ -284,80 +385,102 @@ export function ToolRack(p: Props) {
             </div>
           </div>
         )}
-        {(p.selected || p.nail.decorations.length > 0) && (
-          <div className="action-pair">
-            <button
-              disabled={!p.selected}
-              aria-label="Make decoration smaller"
-              onClick={() =>
-                p.edit({
-                  ...p.nail,
-                  decorations: p.nail.decorations.map((d) =>
-                    d.id === p.selected ? { ...d, size: Math.max(0.1, d.size - 0.04) } : d,
-                  ),
-                })
-              }
-            >
-              − Smaller
-            </button>
-            <button
-              disabled={!p.selected}
-              aria-label="Make decoration bigger"
-              onClick={() =>
-                p.edit({
-                  ...p.nail,
-                  decorations: p.nail.decorations.map((d) =>
-                    d.id === p.selected ? { ...d, size: Math.min(0.65, d.size + 0.04) } : d,
-                  ),
-                })
-              }
-            >
-              + Bigger
-            </button>
-            {nudges.map(({ direction, dx, dy, icon }) => (
+        {['move', 'sticker', 'gem'].includes(p.tool) &&
+          (p.selected || p.nail.decorations.length > 0) && (
+            <div className="action-pair">
               <button
-                key={direction}
                 disabled={!p.selected}
-                aria-label={`Move decoration ${direction}`}
+                aria-label="Make decoration smaller"
                 onClick={() =>
                   p.edit({
                     ...p.nail,
                     decorations: p.nail.decorations.map((d) =>
-                      d.id === p.selected
-                        ? {
-                            ...d,
-                            x: Math.max(0, Math.min(1, d.x + dx)),
-                            y: Math.max(0, Math.min(1, d.y + dy)),
-                          }
-                        : d,
+                      d.id === p.selected ? { ...d, size: Math.max(0.1, d.size - 0.04) } : d,
                     ),
                   })
                 }
               >
-                {icon}
+                − Smaller
               </button>
-            ))}
-            <button
-              disabled={!p.selected}
-              onClick={() =>
-                p.edit({
-                  ...p.nail,
-                  decorations: p.nail.decorations.map((d) =>
-                    d.id === p.selected ? { ...d, x: 0.5, y: 0.5 } : d,
-                  ),
-                })
-              }
-            >
-              Center item
-            </button>
-            <button disabled={!p.selected} onClick={p.rotate}>
-              ↻ Rotate
-            </button>
-            <button disabled={!p.selected} onClick={p.remove}>
-              Remove item
-            </button>
-          </div>
-        )}
+              <button
+                disabled={!p.selected}
+                aria-label="Make decoration bigger"
+                onClick={() =>
+                  p.edit({
+                    ...p.nail,
+                    decorations: p.nail.decorations.map((d) =>
+                      d.id === p.selected ? { ...d, size: Math.min(0.65, d.size + 0.04) } : d,
+                    ),
+                  })
+                }
+              >
+                + Bigger
+              </button>
+              {nudges.map(({ direction, dx, dy, icon }) => (
+                <button
+                  key={direction}
+                  disabled={!p.selected}
+                  aria-label={`Move decoration ${direction}`}
+                  onClick={() =>
+                    p.edit({
+                      ...p.nail,
+                      decorations: p.nail.decorations.map((d) =>
+                        d.id === p.selected
+                          ? {
+                              ...d,
+                              x: Math.max(0, Math.min(1, d.x + dx)),
+                              y: Math.max(0, Math.min(1, d.y + dy)),
+                            }
+                          : d,
+                      ),
+                    })
+                  }
+                >
+                  {icon}
+                </button>
+              ))}
+              <button
+                disabled={!p.selected}
+                onClick={() =>
+                  p.edit({
+                    ...p.nail,
+                    decorations: p.nail.decorations.map((d) =>
+                      d.id === p.selected ? { ...d, x: 0.5, y: 0.5 } : d,
+                    ),
+                  })
+                }
+              >
+                Center item
+              </button>
+              <button disabled={!p.selected} onClick={p.rotate}>
+                ↻ Rotate
+              </button>
+              <button disabled={!p.selected} onClick={p.remove}>
+                Remove item
+              </button>
+              <button
+                disabled={!p.selected || p.nail.decorations.length >= 100}
+                onClick={() => p.edit(duplicateItem(p.nail, p.selected!))}
+              >
+                Duplicate item
+              </button>
+              <button
+                disabled={!p.selected || p.nail.decorations.at(-1)?.id === p.selected}
+                onClick={() => p.edit(reorderItem(p.nail, p.selected!, 'front'))}
+              >
+                Bring to front
+              </button>
+              <button
+                disabled={!p.selected || p.nail.decorations[0]?.id === p.selected}
+                onClick={() => p.edit(reorderItem(p.nail, p.selected!, 'back'))}
+              >
+                Send to back
+              </button>
+              <button disabled={!p.selected} onClick={() => p.selectDecoration(null)}>
+                Deselect item
+              </button>
+            </div>
+          )}
       </div>
     </aside>
   );

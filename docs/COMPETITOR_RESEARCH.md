@@ -92,7 +92,7 @@ Relevant graph sources: `renderNail()` in `src/art/render.ts`, `Nail` and `Manic
 - Any new persisted fields require explicit compatible defaults or a version migration, validation, recovery, and old-save tests. Migration must preserve the active manicure, gallery, and earned supplies.
 - Do not assume Canvas animation will meet the iPad target. Use cached/static material textures and bounded effects, then measure on the actual device.
 
-## Proposed implementation order — subject to discussion
+## Implementation order
 
 | Slice | Reviewable outcome | Acceptance evidence |
 | --- | --- | --- |
@@ -104,12 +104,12 @@ Relevant graph sources: `renderNail()` in `src/art/render.ts`, `Nail` and `Manic
 
 Release each slice after review instead of combining everything into one large redesign. Keep Chromium, Firefox, WebKit, subdirectory, and iframe verification. Physical iPad Safari painting and a short child playtest remain essential.
 
-## Decisions to make together
+## Approved first milestone
 
 Chosen emphasis: **playful creative studio**. Satisfying preparation and friendly customer progression support the creative experience.
 
 Recommended first milestone: slices A–C (workspace, materials/collections, composition shortcuts). Start with Candy Pop, Ocean Sparkle, and Garden Party, using original art. Use the bright, glossy arcade reference images Chris supplied as the visual direction. Prototype one finished nail and one complete five-nail set before expanding the asset library. Customer and photo presentation can follow as a second milestone.
 
-Before finalizing the implementation specification, decide whether short/medium/long nail length selection belongs in this milestone. If included, length changes only the nail artwork bounds; the finger silhouette stays fixed. Artwork coordinates remain normalized and the same geometry must serve screen, gallery, and PNG export.
+Chris approved moving forward with the playful creative studio and including short/medium/long nail lengths. The first milestone implements pictured stages and actual-art navigation, glossy/glitter/pearlescent finishes, the three collection filters, editable pattern ink, distinct gem silhouettes, matching-set copying and decoration duplication/layers. Length changes only the nail artwork bounds; the finger silhouette stays fixed. Shared geometry serves the hand and PNG export, and normalized artwork survives resizing.
 
-Then agree on the visual tone, the first three themed kits, which finishes enter the next release, and whether the next milestone ends after composition tools or also includes the customer/photo experience. Nail length, pedicures, a 3D conversion, camera try-on, and an expanded furniture economy should remain separate scope decisions.
+Preparation feedback and customer/photo presentation remain follow-up slices. Pedicures, 3D conversion, camera try-on and an expanded furniture economy remain separate scope decisions. Physical iPad Safari and a child playtest remain unverified until tested on the actual device.

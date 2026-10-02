@@ -8,7 +8,7 @@ async function start(page: Page) {
     'aria-pressed',
     'true',
   );
-  await expect(page.getByRole('heading', { name: '2. Pick a nail shape' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '3. Pick a nail shape' })).toBeVisible();
   await skipPreparation(page);
 }
 async function active(page: Page) {
@@ -26,7 +26,7 @@ test('manicure shapes are visible in Clean and never change the finger silhouett
 }) => {
   await start(page);
   await page.getByRole('button', { name: 'Clean', exact: true }).click();
-  await expect(page.getByRole('heading', { name: '2. Pick a nail shape' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: '3. Pick a nail shape' })).toBeVisible();
   const finger = page.locator('.finger-skin path').first();
   const outline = await finger.getAttribute('d');
   for (const name of ['Round', 'Oval', 'Square', 'Soft square', 'Almond']) {

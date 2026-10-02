@@ -1,5 +1,5 @@
 import { SHAPES, SKINS } from '../game/catalog';
-import type { Nail, Shape } from '../game/types';
+import type { Nail, Shape, NailLength } from '../game/types';
 import { NailCanvas } from './NailCanvas';
 import { ToolPicture } from './ToolPicture';
 
@@ -7,6 +7,7 @@ export function ManicurePrep({
   nail,
   clean,
   shape,
+  length,
   skin,
   setSkin,
   isFree,
@@ -15,6 +16,7 @@ export function ManicurePrep({
   nail: Nail;
   clean: () => void;
   shape: (shape: Shape) => void;
+  length: (length: NailLength) => void;
   skin: string;
   setSkin: (skin: string) => void;
   isFree: boolean;
@@ -30,7 +32,21 @@ export function ManicurePrep({
         </div>
         <button onClick={clean}>{nail.cleaned ? 'Clean again' : 'Clean this nail'}</button>
       </div>
-      <h3>2. Pick a nail shape</h3>
+      <h3>2. Choose your nail length</h3>
+      <div className="length-buttons" aria-label="Nail length">
+        {(['short', 'medium', 'long'] as const).map((value, i) => (
+          <button
+            key={value}
+            aria-label={`${value[0].toUpperCase() + value.slice(1)} nails`}
+            aria-pressed={(nail.length ?? 'short') === value}
+            onClick={() => length(value)}
+          >
+            <span className="length-picture" style={{ height: 24 + i * 8 }} />
+            {value[0].toUpperCase() + value.slice(1)}
+          </button>
+        ))}
+      </div>
+      <h3>3. Pick a nail shape</h3>
       <div className="shape-buttons">
         {SHAPES.map((s) => (
           <button
