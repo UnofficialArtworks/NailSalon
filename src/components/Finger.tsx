@@ -9,26 +9,26 @@ export function Finger({ skin, children }: { skin: string; children: ReactNode }
       <svg className="finger-skin" viewBox="0 0 240 420" aria-hidden="true">
         <defs>
           <linearGradient id={`${id}-depth`}>
-            <stop stopColor="#714330" stopOpacity=".16" />
-            <stop offset=".16" stopColor="white" stopOpacity=".13" />
-            <stop offset=".45" stopColor="white" stopOpacity=".06" />
-            <stop offset=".82" stopColor="#714330" stopOpacity="0" />
-            <stop offset="1" stopColor="#714330" stopOpacity=".19" />
+            <stop stopColor="#94533b" stopOpacity=".28" />
+            <stop offset=".22" stopColor="#fff4df" stopOpacity=".18" />
+            <stop offset=".48" stopColor="#fff4df" stopOpacity=".04" />
+            <stop offset=".75" stopColor="#94533b" stopOpacity=".04" />
+            <stop offset="1" stopColor="#94533b" stopOpacity=".3" />
           </linearGradient>
         </defs>
         <g>
           <path d={FINGER_PATH} fill={skin} />
           <path d={FINGER_PATH} fill={`url(#${id}-depth)`} />
           <path
-            d="M61 317Q114 326 178 315"
+            d="M64 330Q118 339 176 330M77 337Q121 342 163 337"
             fill="none"
             stroke="#875139"
-            strokeOpacity=".13"
-            strokeWidth="2"
+            strokeOpacity=".09"
+            strokeWidth="1.5"
             strokeLinecap="round"
           />
           <path
-            d="M68 323Q114 331 171 322"
+            d="M73 342Q119 348 168 342"
             fill="none"
             stroke="white"
             strokeOpacity=".16"

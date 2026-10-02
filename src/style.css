@@ -421,6 +421,13 @@ h3 {
   height: 100%;
   display: block;
 }
+.desk-pad .hand-art {
+  height: 100%;
+  max-height: 500px;
+  width: auto;
+  max-width: 100%;
+  flex-shrink: 0;
+}
 .hand-nail {
   position: absolute;
   min-width: 0;

@@ -200,14 +200,14 @@ export function renderNail(
 }
 // Same geometry is used for the on-screen hand and PNG exports.
 export const NAIL_BOXES = [
-  { x: 40, y: 267, w: 49, h: 62, r: -35 },
-  { x: 121, y: 105, w: 50, h: 68, r: -3 },
-  { x: 193, y: 60, w: 53, h: 76, r: 0 },
-  { x: 273, y: 107, w: 50, h: 68, r: 6 },
-  { x: 348, y: 180, w: 46, h: 63, r: 13 },
+  { x: 354, y: 236, w: 43, h: 65, r: 24 },
+  { x: 257, y: 100, w: 46, h: 72, r: 4 },
+  { x: 183, y: 52, w: 47, h: 76, r: 0 },
+  { x: 110, y: 95, w: 44, h: 70, r: -4 },
+  { x: 43, y: 184, w: 37, h: 57, r: -10 },
 ];
 export const HAND_PATH =
-  'M157 535C159 488 132 437 111 410L48 333C23 307 21 282 39 269C58 250 77 262 98 288L124 314L115 145C113 113 127 94 146 96C167 97 177 113 177 142L181 274L183 100C183 64 195 47 219 47C244 47 254 65 254 99L254 274L263 140C265 109 279 92 300 97C321 102 327 119 324 151L317 293L334 212C340 182 352 164 373 169C394 174 402 192 396 222L375 362C370 412 342 452 334 485L331 535Z';
+  'M104 550C106 505 78 465 70 421C64 389 58 355 53 320L33 216C28 188 38 172 56 170C75 168 88 183 92 207L110 325Q114 339 118 324L101 126C99 97 110 81 130 80C151 79 162 96 163 124L173 312Q175 328 179 312L177 82C177 53 188 37 207 37C228 37 240 54 240 82L242 312Q244 328 249 313L250 128C250 99 262 84 281 85C302 86 314 103 311 132L300 351Q300 368 311 352L343 264C353 237 369 224 388 231C408 238 412 257 402 283L369 380C359 417 340 449 325 478C316 497 316 524 318 550Z';
 export async function exportManicure(m: Manicure): Promise<Blob> {
   const c = document.createElement('canvas');
   c.width = 1000;
@@ -223,8 +223,8 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
   ctx.fillStyle = '#957688';
   ctx.fillText('Made with a little imagination', 500, 126);
   ctx.save();
-  ctx.translate(72, 140);
-  ctx.scale(2, 1.65);
+  ctx.translate(159, 140);
+  ctx.scale(1.55, 1.55);
   ctx.fillStyle = m.skin;
   ctx.strokeStyle = '#6d483344';
   ctx.lineWidth = 2;

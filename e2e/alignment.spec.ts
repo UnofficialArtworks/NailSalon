@@ -1,5 +1,25 @@
 import { test, expect } from '@playwright/test';
 
+test('every fingertip can be opened on short desktop, tablet, and phone screens', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await page.getByRole('button', { name: 'Let’s create!' }).click();
+  for (const [width, height] of [
+    [1280, 720],
+    [1024, 768],
+    [768, 1024],
+    [390, 844],
+  ]) {
+    await page.setViewportSize({ width, height });
+    for (let i = 1; i <= 5; i++) {
+      await page.getByRole('button', { name: `Edit nail ${i}`, exact: true }).click();
+      await expect(page.getByLabel(`Paint nail ${i}`, { exact: true })).toBeVisible();
+      await page.getByRole('button', { name: /Back to hand/ }).click();
+    }
+  }
+});
+
 test('nail artwork stays on the fingers while touch targets remain large', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: 'Let’s create!' }).click();

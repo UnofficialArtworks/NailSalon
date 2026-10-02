@@ -18,6 +18,8 @@ The salon uses a bright arcade presentation: star wallpaper, glossy polish, roun
 
 The hand uses fixed artwork bounds with separate 48-pixel touch targets, preventing mobile button sizing from displacing nails. Nail silhouettes fit the hand for every supported shape. The enlarged finger narrows toward its tip and widens toward the hand; its artwork bounds live in `src/art/finger.ts`. The bracelet is clipped to the wrist silhouette. Browser regression checks cover geometry, touch target size, taper direction, and phone selector access.
 
+The revised hand has slender, separated fingers and a right-side thumb, with soft side shading and restrained knuckle lines. The close-up uses the same proportions, with the nail near the fingertip. The overview scales to the desk height so fingertips remain reachable on short screens, and PNG exports preserve the hand's aspect ratio. Nail numbers and saved artwork stay compatible.
+
 ## Quality boundaries
 
 Always retain recoverable artwork, validate persisted data, keep touch targets at least 48 CSS pixels, support reduced motion, and use local assets. Test behavior with Vitest and complete flows in Playwright. Run checks before publishing. Never silently reset saves, discard gallery entries, duplicate customer rewards, suppress errors to make tests pass, or upload personal game data.

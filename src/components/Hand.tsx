@@ -21,25 +21,40 @@ export function Hand({
           <clipPath id={`${id}-wrist`}>
             <path d={HAND_PATH} />
           </clipPath>
-          <linearGradient id={id} x1="0" x2="1" y1="0" y2=".5">
-            <stop stopColor={manicure.skin} />
-            <stop offset=".6" stopColor={manicure.skin} />
-            <stop offset="1" stopColor="#fff" stopOpacity=".12" />
+          <linearGradient id={id}>
+            <stop stopColor="#94533b" stopOpacity=".22" />
+            <stop offset=".24" stopColor="#fff4df" stopOpacity=".15" />
+            <stop offset=".55" stopColor="#fff4df" stopOpacity=".04" />
+            <stop offset="1" stopColor="#94533b" stopOpacity=".25" />
           </linearGradient>
+          <filter id={`${id}-soft`}>
+            <feGaussianBlur stdDeviation="5" />
+          </filter>
         </defs>
-        <path d={HAND_PATH} fill={manicure.skin} stroke="#78534235" strokeWidth="2" />
+        <path d={HAND_PATH} fill={manicure.skin} stroke="#78534220" strokeWidth="1.5" />
         <path d={HAND_PATH} fill={`url(#${id})`} />
+        <g clipPath={`url(#${id}-wrist)`}>
+          <path
+            d="M52 247L70 343M122 176L136 336M198 137L201 331M271 184L269 341M368 310L340 381"
+            fill="none"
+            stroke="#fff5dc"
+            strokeOpacity=".25"
+            strokeWidth="13"
+            strokeLinecap="round"
+            filter={`url(#${id}-soft)`}
+          />
+        </g>
         <path
-          d="M183 287Q195 298 209 290M264 291Q279 300 291 294M144 322Q157 331 174 321M322 322Q336 333 349 323M159 407Q183 391 202 396M203 468Q255 449 302 462"
+          d="M121 273Q137 278 152 273M191 257Q207 261 225 257M262 275Q277 280 292 274M52 303Q65 306 80 301"
           fill="none"
-          stroke="#84513c25"
-          strokeWidth="2"
+          stroke="#84513c18"
+          strokeWidth="1.5"
           strokeLinecap="round"
         />
         <g clipPath={`url(#${id}-wrist)`}>
-          <path d="M150 495Q240 517 339 495" fill="none" stroke="#e9aa32" strokeWidth="10" />
-          <path d="M150 493Q240 515 339 493" fill="none" stroke="#fff1b3" strokeWidth="3" />
-          <g transform="translate(245 506)">
+          <path d="M91 508Q207 530 330 508" fill="none" stroke="#e9aa32" strokeWidth="8" />
+          <path d="M91 506Q207 528 330 506" fill="none" stroke="#fff1b3" strokeWidth="2.5" />
+          <g transform="translate(210 519)">
             <circle r="10" fill="#edb640" stroke="#fff0a3" strokeWidth="1.5" />
             <path d="m0-7 2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z" fill="#fff9d6" />
           </g>
