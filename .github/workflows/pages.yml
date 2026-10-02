@@ -28,6 +28,8 @@ jobs:
       - run: npm audit --audit-level=high
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run build
+      - name: Check material rendering in WebKit
+        run: npm run test:e2e -- --project=webkit --grep "material rendering"
       - run: npm run test:e2e
       - name: Upload game
         if: github.event_name != 'pull_request'

@@ -175,6 +175,8 @@ test('material rendering is deterministic and leaves bare and erased areas natur
     return variants;
   }, '/src/art/render.ts');
   for (const variant of result) {
+    if (JSON.stringify(variant.filledPaint) !== JSON.stringify(variant.filled))
+      console.log('Material regression samples:', JSON.stringify(variant));
     expect(variant.same).toBe(true);
     expect(variant.bare).toEqual(variant.expectedBare);
     expect(variant.erased).toEqual(variant.expectedErased);

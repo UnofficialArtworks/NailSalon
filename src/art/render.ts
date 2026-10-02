@@ -192,8 +192,8 @@ export function renderNail(
     s.points.forEach((p, i) =>
       i === 0 ? ctx.moveTo(p.x * width, p.y * height) : ctx.lineTo(p.x * width, p.y * height),
     );
-    ctx.stroke();
-    if (s.points.length === 1) {
+    if (s.points.length > 1) ctx.stroke();
+    else if (s.points.length === 1) {
       ctx.beginPath();
       ctx.arc(s.points[0].x * width, s.points[0].y * height, (s.width * width) / 2, 0, Math.PI * 2);
       ctx.fill();
@@ -207,11 +207,19 @@ export function renderNail(
       if ((nail.washed ?? 0) & (1 << i)) continue;
       ctx.fillStyle = '#b48b6a88';
       ctx.beginPath();
-      ctx.ellipse(spot.x, spot.y, 0.046, 0.046 * width / height, 0, 0, Math.PI * 2);
+      ctx.ellipse(spot.x, spot.y, 0.046, (0.046 * width) / height, 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = '#fff2dd88';
       ctx.beginPath();
-      ctx.ellipse(spot.x - 0.01, spot.y - 0.006, 0.012, 0.012 * width / height, 0, 0, Math.PI * 2);
+      ctx.ellipse(
+        spot.x - 0.01,
+        spot.y - 0.006,
+        0.012,
+        (0.012 * width) / height,
+        0,
+        0,
+        Math.PI * 2,
+      );
       ctx.fill();
     }
   }

@@ -116,8 +116,8 @@ export function nailShine(
     stroke.points.forEach((p, i) =>
       i ? mc.lineTo(p.x * width, p.y * height) : mc.moveTo(p.x * width, p.y * height),
     );
-    mc.stroke();
-    if (stroke.points.length === 1) {
+    if (stroke.points.length > 1) mc.stroke();
+    else if (stroke.points.length === 1) {
       const p = stroke.points[0];
       mc.beginPath();
       mc.arc(p.x * width, p.y * height, (stroke.width * width) / 2, 0, Math.PI * 2);
