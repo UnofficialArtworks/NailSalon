@@ -64,6 +64,9 @@ test('earned photo choices survive scrapbook copying, reload and export', async 
   page,
 }, testInfo) => {
   await page.setViewportSize({ width: 768, height: 1024 });
+  // This multi-stage flow includes two viewport captures, reload, gallery editing
+  // and PNG export. Match the existing scrapbook flow's budget on slower CI WebKit.
+  test.setTimeout(60000);
   await setStars(page, 36);
   await page.getByRole('button', { name: 'Start painting →' }).click();
   await page.getByRole('button', { name: 'Color all five' }).click();
