@@ -42,14 +42,14 @@ describe('creative library and rewards', () => {
       STICKERS.length,
       GEMS.length,
       CUSTOMERS.length,
-    ]).toEqual([36, 10, 30, 12, 12]);
+    ]).toEqual([36, 10, 36, 12, 12]);
     const starter = suppliesAt(0);
     expect([
       starter.colors.length,
       starter.patterns.length,
       starter.stickers.length,
       starter.gems.length,
-    ]).toEqual([18, 5, 15, 6]);
+    ]).toEqual([18, 5, 21, 6]);
     expect(MILESTONES.map((m) => m.stars)).toEqual([3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36]);
     expect(suppliesAt(36).colors).toHaveLength(36);
     expect(suppliesAt(36).room).toHaveLength(9);

@@ -38,6 +38,15 @@ export const COLLECTIONS = [
     patterns: [0, 2, 7],
     gems: [0, 1, 4, 5, 8],
   },
+  {
+    id: 'rainbow',
+    name: 'Rainbow Dreams',
+    icon: 'sticker-32',
+    colors: [0, 1, 3, 4, 5, 6, 8, 10, 18, 22, 26],
+    stickers: [0, 1, 3, 6, 13, 19, 30, 31, 32, 33, 34, 35],
+    patterns: [0, 3, 8, 9],
+    gems: [0, 1, 2, 3, 9, 10],
+  },
 ] as const;
 
 export function copyNailArt(

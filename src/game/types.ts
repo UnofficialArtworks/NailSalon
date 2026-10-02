@@ -1,6 +1,6 @@
 export type Shape = 'round' | 'oval' | 'square' | 'soft-square' | 'almond';
 export type NailLength = 'short' | 'medium' | 'long';
-export type Finish = 'glossy' | 'glitter' | 'pearl';
+export type Finish = 'glossy' | 'glitter' | 'pearl' | 'matte' | 'metallic';
 export type Tool = 'clean' | 'brush' | 'eraser' | 'pattern' | 'sticker' | 'gem' | 'move';
 export interface Point {
   x: number;

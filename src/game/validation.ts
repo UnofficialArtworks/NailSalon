@@ -13,7 +13,8 @@ function nail(v: unknown): boolean {
     (v.length !== undefined &&
       (typeof v.length !== 'string' || !['short', 'medium', 'long'].includes(v.length))) ||
     (v.finish !== undefined &&
-      (typeof v.finish !== 'string' || !['glossy', 'glitter', 'pearl'].includes(v.finish))) ||
+      (typeof v.finish !== 'string' ||
+        !['glossy', 'glitter', 'pearl', 'matte', 'metallic'].includes(v.finish))) ||
     (v.patternColorId !== undefined &&
       v.patternColorId !== null &&
       !id(v.patternColorId, COLORS)) ||

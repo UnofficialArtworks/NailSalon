@@ -85,6 +85,12 @@ export const STICKERS: Supply[] = [
   'Bumblebee',
   'Balloon',
   'Tulip',
+  'Shooting star',
+  'Magic wand',
+  'Rainbow heart',
+  'Cupcake',
+  'Sandcastle',
+  'Rocket',
 ].map((name, i) => ({
   id: `sticker-${i}`,
   name,
@@ -169,7 +175,7 @@ type Reward = {
 const rewards: Reward[] = [
   ...COLORS.slice(18).map((s) => ({ ...s, kind: 'colors' as const })),
   ...PATTERNS.slice(5).map((s) => ({ ...s, kind: 'patterns' as const })),
-  ...STICKERS.slice(15).map((s) => ({ ...s, kind: 'stickers' as const })),
+  ...STICKERS.slice(15, 30).map((s) => ({ ...s, kind: 'stickers' as const })),
   ...GEMS.slice(6).map((s) => ({ ...s, kind: 'gems' as const })),
   ...ROOM.slice(3).map((s) => ({ ...s, kind: 'room' as const })),
 ];
@@ -184,7 +190,7 @@ export function suppliesAt(stars: number) {
   return {
     colors: COLORS.filter((c, i) => i < 18 || earned.includes(c.id)),
     patterns: PATTERNS.filter((c, i) => i < 5 || earned.includes(c.id)),
-    stickers: STICKERS.filter((c, i) => i < 15 || earned.includes(c.id)),
+    stickers: STICKERS.filter((c, i) => i < 15 || i >= 30 || earned.includes(c.id)),
     gems: GEMS.filter((c, i) => i < 6 || earned.includes(c.id)),
     room: ROOM.filter((c, i) => i < 3 || earned.includes(c.id)),
   };

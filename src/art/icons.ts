@@ -162,6 +162,54 @@ const gleam = (path: string) => line(path, '#fffaf0', 3);
 
 // Original miniature illustrations, kept inside the 64px sticker sheet.
 const refined: Record<number, Layer[]> = {
+  30: [
+    fill('M8 51Q25 12 53 12Q26 28 16 57Z', '#8acfea'),
+    fill('M7 47Q29 22 51 16Q29 34 17 55Z', '#f8abd7'),
+    fill('M44 4L49 14L60 16L52 24L54 36L43 30L33 36L35 24L27 16L39 14Z', gold),
+    gleam('M41 13L43 10'),
+    dot(12, 22, 2, cream),
+    dot(26, 48, 2, gold),
+  ],
+  31: [
+    line('M12 55L42 22', '#9e70d5', 8),
+    line('M14 53L39 25', '#f7bded', 2),
+    fill('M44 3L48 14L60 17L50 24L49 37L40 28L28 31L33 20L27 10L39 12Z', gold),
+    gleam('M40 17L44 13'),
+    line('M9 17V25M5 21H13M56 43V51M52 47H60', '#80cbe0', 3),
+  ],
+  32: [
+    fill(heart, '#f28bae'),
+    fill('M10 28Q32 8 54 28V35Q32 17 10 35Z', '#ffd76f'),
+    fill('M12 35Q32 18 52 35L47 41Q32 27 17 41Z', '#92dec1'),
+    fill('M17 41Q32 28 47 41L41 47Q32 38 23 47Z', '#8ccbe9'),
+    gleam('M13 19Q16 11 23 13'),
+  ],
+  33: [
+    fill('M13 35H51L45 58H19Z', '#ae8de3'),
+    line('M24 41L26 54M33 41V54M42 41L40 54', '#e4cbff', 2),
+    fill('M8 35Q2 24 17 22Q12 9 27 12Q33 1 39 13Q54 10 49 22Q63 25 56 35Z', '#ffb6da'),
+    dot(33, 10, 5, '#ef6393'),
+    gleam('M14 27Q15 24 20 25'),
+    line('M27 21L30 24M40 26L43 23M23 31H26', '#fff8d0', 2),
+  ],
+  34: [
+    fill('M8 57V26H17V20H23V57ZM41 57V20H47V26H56V57ZM20 57V35H44V57Z', '#f4cb7b'),
+    fill('M26 57V48Q32 37 38 48V57Z', '#bd8755'),
+    line('M7 58H58M17 32H23M41 32H48', '#e1ac57', 3),
+    line('M32 35V6', '#9c71bf', 2),
+    fill('M33 6L50 13L33 21Z', '#f187bc'),
+    gleam('M12 35V48'),
+  ],
+  35: [
+    fill('M23 43L16 55L17 35L25 25ZM41 43L48 55L47 35L39 25Z', '#a886dc'),
+    fill('M25 45L32 61L39 45Z', '#ffd362'),
+    fill('M29 45L32 55L35 45Z', '#ff8c74'),
+    fill('M22 44V25Q23 10 32 3Q41 10 42 25V44Z', '#e7f8ff'),
+    fill('M22 25Q23 11 32 3Q41 11 42 25Z', '#ee8db5'),
+    dot(32, 31, 7, '#80c8e5'),
+    dot(30, 29, 2, '#fff'),
+    line('M22 43H42', '#a785c5', 3),
+  ],
   17: [
     line('M23 45V16L51 8V38', purple, 5),
     fill('M23 16L51 8V17L23 25Z', purple),
@@ -344,7 +392,7 @@ const refined: Record<number, Layer[]> = {
 };
 
 export function iconLayers(id: string): Layer[] {
-  const index = id === 'heart' ? 0 : id === 'star' ? 1 : Number(id.split('-')[1]) % shapes.length;
+  const index = id === 'heart' ? 0 : id === 'star' ? 1 : Number(id.split('-')[1]);
   return (refined[index] ?? shapes[index] ?? refined[0]).map((l) =>
     l.fill !== 'none' && !l.stroke ? { ...l, stroke: '#75436b', strokeWidth: 1.25 } : l,
   );

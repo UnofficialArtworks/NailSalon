@@ -6,7 +6,7 @@ import { nailContour } from './contour';
 import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
 import { lengthBox } from './length';
-import { polishPaint } from './material';
+import { polishPaint, nailShine } from './material';
 import { DIRT_SPOTS } from '../game/preparation';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
@@ -215,21 +215,7 @@ export function renderNail(
       ctx.fill();
     }
   }
-  const shine = ctx.createLinearGradient(0, 0, 1, 0);
-  shine.addColorStop(0, '#43144e24');
-  shine.addColorStop(0.24, '#ffffff18');
-  shine.addColorStop(0.65, '#ffffff00');
-  shine.addColorStop(1, '#43144e30');
-  ctx.fillStyle = shine;
-  ctx.fillRect(0, 0, 1, 1);
-  ctx.fillStyle = '#ffffff85';
-  ctx.beginPath();
-  ctx.ellipse(0.23, 0.34, 0.027, 0.21, 0.04, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.fillStyle = '#ffffff45';
-  ctx.beginPath();
-  ctx.ellipse(0.76, 0.57, 0.018, 0.14, 0.04, 0, Math.PI * 2);
-  ctx.fill();
+  nailShine(ctx, nail, width, height);
   ctx.restore();
   ctx.strokeStyle = '#6b464432';
   ctx.lineWidth = 0.012;

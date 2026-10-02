@@ -167,6 +167,8 @@ export function ToolRack(p: Props) {
                     { id: 'glossy', name: 'Glossy', icon: '◡' },
                     { id: 'glitter', name: 'Glitter', icon: '✧' },
                     { id: 'pearl', name: 'Pearlescent', icon: '◉' },
+                    { id: 'matte', name: 'Matte', icon: '●' },
+                    { id: 'metallic', name: 'Metallic', icon: '◇' },
                   ] as const
                 ).map((f) => (
                   <button

@@ -141,7 +141,7 @@ test('material rendering is deterministic and leaves bare and erased areas natur
       return Array.from(ctx.getImageData(0, 0, 240, 380).data);
     };
     const baseline = render(nail);
-    const variants = (['glitter', 'pearl'] as Finish[]).map((finish) => {
+    const variants = (['glitter', 'pearl', 'matte', 'metallic'] as Finish[]).map((finish) => {
       const dot = { points: [{ x: 0.5, y: 0.5 }], width: 0.15, colorId: 'color-0', erase: false };
       const art = { ...nail, finish, strokes: [dot] };
       const first = render(art);

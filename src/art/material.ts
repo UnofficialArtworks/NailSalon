@@ -1,4 +1,4 @@
-import type { Finish } from '../game/types';
+import type { Finish, Nail } from '../game/types';
 
 const glitterTiles = new Map<string, HTMLCanvasElement>();
 function blend(color: string, tint: string, amount: number): string {
@@ -19,6 +19,20 @@ export function polishPaint(
   finish: Finish = 'glossy',
   nailWidth = 1,
 ): string | CanvasGradient | CanvasPattern {
+  if (finish === 'metallic') {
+    const gradient = ctx.createLinearGradient(0, 0, nailWidth, 0);
+    for (const [at, tint, amount] of [
+      [0, '#191d38', 0.5],
+      [0.18, '#ffffff', 0.22],
+      [0.36, '#ffffff', 0.85],
+      [0.46, '#ffffff', 0.3],
+      [0.64, '#191d38', 0.45],
+      [0.82, '#ffffff', 0.55],
+      [1, '#191d38', 0.4],
+    ] as const)
+      gradient.addColorStop(at, blend(color, tint, amount));
+    return gradient;
+  }
   if (finish === 'pearl') {
     const gradient = ctx.createLinearGradient(0, 0, nailWidth, 0.25 * nailWidth);
     gradient.addColorStop(0, blend(color, '#77edff', 0.25));
@@ -54,3 +68,68 @@ export function polishPaint(
   pattern.setTransform(new DOMMatrix().scale((0.25 * nailWidth) / 128));
   return pattern;
 }
+
+// Reusable scratch surface: restore matte polish after shine, keeping natural
+// and erased nail areas identical to other finishes. No saved raster data.
+let shineSurface: HTMLCanvasElement | undefined;
+export function nailShine(
+  ctx: CanvasRenderingContext2D,
+  nail: Nail,
+  width: number,
+  height: number,
+) {
+  const matte = nail.finish === 'matte' && (nail.fillColorId || nail.strokes.some((s) => !s.erase));
+  const surface = matte ? (shineSurface ??= document.createElement('canvas')) : null;
+  if (surface) {
+    surface.width = width;
+    surface.height = height;
+    surface.getContext('2d')!.drawImage(ctx.canvas, 0, 0);
+  }
+  const shineCtx = ctx;
+  const shine = shineCtx.createLinearGradient(0, 0, 1, 0);
+  shine.addColorStop(0, '#43144e24');
+  shine.addColorStop(0.24, '#ffffff18');
+  shine.addColorStop(0.65, '#ffffff00');
+  shine.addColorStop(1, '#43144e30');
+  shineCtx.fillStyle = shine;
+  shineCtx.fillRect(0, 0, 1, 1);
+  for (const [x, y, rx, ry, opacity] of [
+    [0.23, 0.34, 0.027, 0.21, '#ffffff85'],
+    [0.76, 0.57, 0.018, 0.14, '#ffffff45'],
+  ] as const) {
+    shineCtx.fillStyle = opacity;
+    shineCtx.beginPath();
+    shineCtx.ellipse(x, y, rx, ry, 0.04, 0, Math.PI * 2);
+    shineCtx.fill();
+  }
+  if (!surface) return;
+  // Rebuild the paint mask, including erasures, on another bounded scratch surface.
+  const mask = (matteMask ??= document.createElement('canvas'));
+  mask.width = width;
+  mask.height = height;
+  const mc = mask.getContext('2d')!;
+  mc.fillStyle = '#fff';
+  mc.strokeStyle = '#fff';
+  mc.lineCap = mc.lineJoin = 'round';
+  if (nail.fillColorId) mc.fillRect(0, 0, width, height);
+  for (const stroke of nail.strokes) {
+    mc.globalCompositeOperation = stroke.erase ? 'destination-out' : 'source-over';
+    mc.lineWidth = stroke.width * width;
+    mc.beginPath();
+    stroke.points.forEach((p, i) =>
+      i ? mc.lineTo(p.x * width, p.y * height) : mc.moveTo(p.x * width, p.y * height),
+    );
+    mc.stroke();
+    if (stroke.points.length === 1) {
+      const p = stroke.points[0];
+      mc.beginPath();
+      mc.arc(p.x * width, p.y * height, (stroke.width * width) / 2, 0, Math.PI * 2);
+      mc.fill();
+    }
+  }
+  const unshiny = surface.getContext('2d')!;
+  unshiny.globalCompositeOperation = 'destination-in';
+  unshiny.drawImage(mask, 0, 0);
+  ctx.drawImage(surface, 0, 0, 1, 1);
+}
+let matteMask: HTMLCanvasElement | undefined;
