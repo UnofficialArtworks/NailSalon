@@ -30,6 +30,10 @@ import { CopyNails } from './components/CopyNails';
 import { copyNailArt } from './game/studio';
 import { StudioStages } from './components/StudioStages';
 import { PhotoStudio } from './components/PhotoStudio';
+import { OccasionCard } from './components/OccasionCard';
+import { CreativePrompt } from './components/CreativePrompt';
+import { CustomerCelebration } from './components/CustomerCelebration';
+import { occasionFor } from './game/occasions';
 type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
@@ -308,6 +312,27 @@ export default function App() {
         }}
         reveal={finish}
       />
+      {customer && (
+        <div className="occasion-banner">
+          <OccasionCard occasion={occasionFor(customer.id)} />
+        </div>
+      )}
+      {m.mode === 'free' && save.stars >= 36 && (
+        <div className="studio-inspiration">
+          <CreativePrompt
+            color={(id) => {
+              setColor(id);
+              setTool('brush');
+              setZoom(true);
+            }}
+            sticker={(id) => {
+              setSupply(id);
+              setTool('sticker');
+              setZoom(true);
+            }}
+          />
+        </div>
+      )}
       <main className="salon-layout">
         <aside className="salon-sidebar">
           <div className="mode-switch" aria-label="Game mode">
@@ -334,8 +359,8 @@ export default function App() {
             {customer ? (
               <>
                 <div className="customer-portrait">
-                  <Portrait customer={customer} />
-                  <span className="hello-bubble">Hi!</span>
+                  <Portrait key={m.id} customer={customer} wave={!m.rewarded} happy={m.rewarded} />
+                  <span className="hello-bubble">{m.rewarded ? 'Thank you!' : 'Hi!'}</span>
                 </div>
                 <h2>{customer.name}</h2>
                 <div className="wish-list">
@@ -696,23 +721,15 @@ export default function App() {
               </p>
             )}
             <div className="reveal-stars">✧ ✦ ✧</div>
+            {earned > 0 && customer && score ? (
+              <CustomerCelebration customer={customer} score={score} earned={earned} />
+            ) : (
+              <h3>A tiny masterpiece, made by you.</h3>
+            )}
             <PhotoStudio
               manicure={m}
               onChange={(photo) => setSave((s) => ({ ...s, active: { ...s.active, photo } }))}
             />
-            {earned > 0 ? (
-              <>
-                <h3>{customer?.name} loves her lovely nails!</h3>
-                <div className="earned-stars">
-                  {Array.from({ length: earned }, (_, i) => (
-                    <Icon key={i} id="star" size={44} />
-                  ))}
-                  <span>+{earned} stars</span>
-                </div>
-              </>
-            ) : (
-              <h3>A tiny masterpiece, made by you.</h3>
-            )}
             {MILESTONES.filter((t) => t.stars > oldStars && t.stars <= save.stars).map((t) => (
               <div key={t.stars} className="unlock-message">
                 <strong>New treasures!</strong>

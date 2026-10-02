@@ -11,7 +11,15 @@ const FRINGES = [
 ];
 
 // Layered, flat-shaded busts; every customer varies by hairstyle, eyes and accessory.
-export function Portrait({ customer }: { customer: Customer }) {
+export function Portrait({
+  customer,
+  happy = false,
+  wave = false,
+}: {
+  customer: Customer;
+  happy?: boolean;
+  wave?: boolean;
+}) {
   const id = useId();
   const { skin, hair, shirt, style } = customer;
   const t = skinTones(skin);
@@ -22,7 +30,7 @@ export function Portrait({ customer }: { customer: Customer }) {
   const eye = EYES[(style * 5 + 1) % 6];
   const fringe = FRINGES[cut % 3];
   const freckles = style % 5 === 1;
-  const openSmile = style % 3 === 0;
+  const openSmile = happy || style % 3 === 0;
   const lash = mix(hair, '#1b1020', 0.6);
   return (
     <svg viewBox="0 0 160 165" role="img" aria-label={`${customer.name}, your customer`}>
@@ -242,8 +250,8 @@ export function Portrait({ customer }: { customer: Customer }) {
         ))}
         <path d="M54 82L50 79M106 82L110 79" stroke={lash} strokeWidth="2" strokeLinecap="round" />
         {/* cheeks, nose, mouth */}
-        <ellipse cx="55" cy="102" rx="9" ry="5" fill="#ff7b8e" fillOpacity=".3" />
-        <ellipse cx="105" cy="102" rx="9" ry="5" fill="#ff7b8e" fillOpacity=".3" />
+        <ellipse cx="55" cy="102" rx="9" ry="5" fill="#ff7b8e" fillOpacity={happy ? '.5' : '.3'} />
+        <ellipse cx="105" cy="102" rx="9" ry="5" fill="#ff7b8e" fillOpacity={happy ? '.5' : '.3'} />
         {freckles &&
           [
             [52, 98],
@@ -327,6 +335,28 @@ export function Portrait({ customer }: { customer: Customer }) {
           </g>
         )}
       </g>
+      {wave && (
+        <g className="customer-wave">
+          <path
+            d="M117 158Q145 158 140 131"
+            fill="none"
+            stroke={shirt}
+            strokeWidth="18"
+            strokeLinecap="round"
+          />
+          <path
+            d="M132 132L127 119Q124 113 128 112L132 118L130 104Q130 99 134 101L136 114L137 100Q139 96 141 101L141 114L145 104Q148 101 149 106L146 117L151 112Q155 110 155 115L147 128Q145 137 137 135Z"
+            fill={t.base}
+            stroke={t.line}
+            strokeWidth="1"
+          />
+        </g>
+      )}
+      {happy && (
+        <g fill="#f489bc" aria-hidden="true">
+          <path d="M19 84c-16-12-4-22 2-13c7-9 17 1-2 13zM141 77c-14-10-4-19 1-11c6-8 16 1-1 11z" />
+        </g>
+      )}
     </svg>
   );
 }

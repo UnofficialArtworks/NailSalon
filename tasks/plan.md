@@ -18,3 +18,7 @@ Implemented selectable illustrated photo backdrops, shared preview/export hand a
 ## Playful preparation milestone — October 2, 2026
 
 Reviewed and preserved Claude's supplied hand/customer model changes. Implemented the first tactile preparation activity: localized dirt removal, pointer-following bubbly sponge, progress feedback and reduced-motion-aware completion sparkles. Tap cleaning and skipping remain available; shape/length previews follow washing. Compatible partial progress survives cancellation, history, reload and rotation. Verified with 31 unit tests and 120 browser checks across all three engines, plus phone/tablet/desktop visual inspection. Separate file interaction and customer occasion content remain future options.
+
+## Customer and creative expansion — October 2, 2026
+
+Implemented four illustrated occasions, arrival waves, happy finished portraits, individual star reveals, matte/metallic finishes, six original bonus starter stickers, Rainbow Dreams, and optional post-unlock free-play ideas. Existing scoring, saved IDs and all milestone bundles remain compatible. Occasions and inspiration live above the workspace; one inspiration instance survives rotation. Verified with 34 unit tests and 129 browser checks, including material pixels, save/gallery/export journeys and responsive clearance, plus visual inspection. Tactile filing and actual iPad/child playtests remain future work.

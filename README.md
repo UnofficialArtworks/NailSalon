@@ -26,7 +26,9 @@ Open the address Vite prints. For an iPad on the same network, open the **Networ
 - **Gallery:** save up to 50 designs, edit a copy, delete with confirmation, or export a PNG. An unchanged saved manicure stays marked **Saved**, including after reload, and does not prompt you to save again. A full gallery never discards existing art automatically.
 - **Sound:** music and effects have separate controls. Original synthesized music begins after interaction and pauses when the page is hidden.
 
-The library contains 12 customers, 36 colors, 10 patterns, 30 stickers, 12 gems, five nail shapes, six skin tones, and three choices each for walls, desks, and tabletop accessories. Half the supplies and one of each room choice are initially available.
+The library contains 12 customers, 36 colors, 10 patterns, 36 stickers, 12 gems, five nail shapes, three lengths, five polish finishes, six skin tones, and three choices each for walls, desks, and tabletop accessories. Start with 18 colors, five patterns, 21 stickers, six gems, and one of each room choice. Six themed stickers are bonus starter supplies; existing reward milestones are unchanged.
+
+Customers arrive with illustrated party, beach, picnic or space occasions and celebrate completed designs. Occasions inspire the artwork without changing scoring. Rainbow Dreams joins the themed supply filters; matte and metallic finishes join glossy, glitter and pearlescent polish. After 36 stars, free play offers optional creative ideas with pictured supply suggestions.
 
 ## Saves and recovery
 
