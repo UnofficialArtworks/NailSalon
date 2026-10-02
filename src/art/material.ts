@@ -69,9 +69,8 @@ export function polishPaint(
   return pattern;
 }
 
-// Reusable scratch surface: restore matte polish after shine, keeping natural
+// Restore matte polish after shine, keeping natural
 // and erased nail areas identical to other finishes. No saved raster data.
-let shineSurface: HTMLCanvasElement | undefined;
 export function nailShine(
   ctx: CanvasRenderingContext2D,
   nail: Nail,
@@ -79,14 +78,9 @@ export function nailShine(
   height: number,
 ) {
   const matte = nail.finish === 'matte' && (nail.fillColorId || nail.strokes.some((s) => !s.erase));
-  const surface = matte ? (shineSurface ??= document.createElement('canvas')) : null;
-  if (surface) {
-    surface.width = width;
-    surface.height = height;
-    const snapshot = surface.getContext('2d')!;
-    snapshot.globalCompositeOperation = 'source-over';
-    snapshot.drawImage(ctx.canvas, 0, 0);
-  }
+  // A fully painted matte nail needs no gloss pass or scratch surface.
+  if (matte && nail.fillColorId && !nail.strokes.some((s) => s.erase)) return;
+  const before = matte ? ctx.getImageData(0, 0, width, height) : null;
   const shineCtx = ctx;
   const shine = shineCtx.createLinearGradient(0, 0, 1, 0);
   shine.addColorStop(0, '#43144e24');
@@ -104,14 +98,12 @@ export function nailShine(
     shineCtx.ellipse(x, y, rx, ry, 0.04, 0, Math.PI * 2);
     shineCtx.fill();
   }
-  if (!surface) return;
-  // Rebuild the paint mask, including erasures, on another bounded scratch surface.
+  if (!before) return;
+  // Rebuild the paint mask, including erasures, on a reusable bounded surface.
   const mask = (matteMask ??= document.createElement('canvas'));
   mask.width = width;
   mask.height = height;
   const mc = mask.getContext('2d')!;
-  // Explicitly reset reused canvas state: an erased nail leaves destination-out
-  // active, and WebKit may retain it when dimensions are assigned unchanged.
   mc.globalCompositeOperation = 'source-over';
   mc.fillStyle = '#fff';
   mc.strokeStyle = '#fff';
@@ -132,9 +124,18 @@ export function nailShine(
       mc.fill();
     }
   }
-  const unshiny = surface.getContext('2d')!;
-  unshiny.globalCompositeOperation = 'destination-in';
-  unshiny.drawImage(mask, 0, 0);
-  ctx.drawImage(surface, 0, 0, 1, 1);
+  // Blend actual pixels instead of scaling a composited canvas back into nail
+  // coordinates. This preserves bare pixels exactly across WebKit platforms.
+  const coverage = mc.getImageData(0, 0, width, height).data;
+  const after = ctx.getImageData(0, 0, width, height);
+  for (let i = 0; i < coverage.length; i += 4) {
+    const amount = coverage[i + 3] / 255;
+    if (!amount) continue;
+    for (let channel = 0; channel < 4; channel++)
+      after.data[i + channel] = Math.round(
+        before.data[i + channel] * amount + after.data[i + channel] * (1 - amount),
+      );
+  }
+  ctx.putImageData(after, 0, 0);
 }
 let matteMask: HTMLCanvasElement | undefined;

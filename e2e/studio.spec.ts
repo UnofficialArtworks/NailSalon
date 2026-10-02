@@ -152,6 +152,11 @@ test('material rendering is deterministic and leaves bare and erased areas natur
         strokes: [],
         fillColorId: 'color-0',
       });
+      const filledErased = render({
+        ...art,
+        fillColorId: 'color-0',
+        strokes: [{ ...dot, points: [{ x: 0.5, y: 280 / 380 }], erase: true }],
+      });
       const sample = (pixels: number[], x: number, y: number) =>
         pixels.slice((y * 240 + x) * 4, (y * 240 + x) * 4 + 4);
       return {
@@ -163,6 +168,8 @@ test('material rendering is deterministic and leaves bare and erased areas natur
         expectedErased: sample(baseline, 120, 190),
         painted: sample(first, 120, 190),
         filled: sample(filled, 120, 190),
+        filledPaint: sample(filledErased, 120, 190),
+        filledErased: sample(filledErased, 120, 280),
       };
     });
     return variants;
@@ -175,5 +182,9 @@ test('material rendering is deterministic and leaves bare and erased areas natur
     expect(variant.painted, `${variant.finish}: brush and fill material must match`).toEqual(
       variant.filled,
     );
+    expect(variant.filledPaint, `${variant.finish}: erasing elsewhere preserves paint`).toEqual(
+      variant.filled,
+    );
+    expect(variant.filledErased).toEqual(variant.expectedBare);
   }
 });
