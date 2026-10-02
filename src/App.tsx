@@ -1,3 +1,4 @@
+import { Finger } from './components/Finger';
 import { useEffect, useRef, useState } from 'react';
 import { COLORS, CUSTOMERS, MILESTONES, ROOM, STICKERS } from './game/catalog';
 import {
@@ -305,9 +306,7 @@ export default function App() {
                   <Portrait customer={customer} />
                   <span className="hello-bubble">Hi!</span>
                 </div>
-                <span className="eyebrow">A LITTLE WISH FROM</span>
                 <h2>{customer.name}</h2>
-                <p>“I’d love these on my nails!”</p>
                 <div className="wish-list">
                   <button
                     className={score?.color ? 'wish-met' : ''}
@@ -332,7 +331,6 @@ export default function App() {
                     <span aria-hidden="true">{score?.sticker ? '✓' : '♡'}</span>
                   </button>
                 </div>
-                <p className="little-note">Any finished manicure makes me smile.</p>
               </>
             ) : (
               <>
@@ -341,17 +339,7 @@ export default function App() {
                   <span>✧</span>
                   <Icon id="sticker-2" size={42} />
                 </div>
-                <span className="eyebrow">YOUR IMAGINATION, YOUR RULES</span>
-                <h2>Make a little magic.</h2>
-                <p>
-                  Pick a color. Add a sparkle.
-                  <br />
-                  See where your creativity goes!
-                </p>
-                <div className="free-badges">
-                  <span>No timers</span>
-                  <span>Just fun</span>
-                </div>
+                <h2>Free play!</h2>
                 <button
                   className="full-width"
                   onClick={() => {
@@ -360,7 +348,7 @@ export default function App() {
                     setToast('Ready to paint! Tap a nail to start.');
                   }}
                 >
-                  Skip prep &amp; paint
+                  Ready to paint
                 </button>
               </>
             )}
@@ -368,7 +356,7 @@ export default function App() {
           <section className="reward-card">
             <div className="reward-title">
               <Icon id="star" size={26} />
-              <h3>{next ? 'Your next little treasure' : 'All treasures unlocked!'}</h3>
+              <h3>{next ? 'Next treasure' : 'All treasures unlocked!'}</h3>
             </div>
             {next ? (
               <>
@@ -399,25 +387,10 @@ export default function App() {
             )}
           </section>
           <button className="room-button" onClick={() => setPanel('room')}>
-            <span aria-hidden="true">⌂</span> Decorate your salon <span>→</span>
+            <span aria-hidden="true">⌂</span> Salon <span>→</span>
           </button>
-          <p className="sidebar-note">
-            A little color.
-            <br />A whole lot of you.
-          </p>
         </aside>
         <section className="workspace" aria-label="Manicure workspace">
-          <div className="workspace-title">
-            <div>
-              <span className="eyebrow">
-                {zoom ? `NAIL ${selectedNail + 1} · UP CLOSE` : 'LET’S MAKE SOMETHING LOVELY'}
-              </span>
-              <h2>{zoom ? 'Tiny canvas, big ideas.' : 'Your canvas awaits.'}</h2>
-            </div>
-            <span className="workspace-sparkle" aria-hidden="true">
-              ✦
-            </span>
-          </div>
           <div className={`desk-scene ${zoom ? 'zoomed' : ''}`}>
             <div className="desk-line" />
             <div className="scene-flower" aria-hidden="true">
@@ -465,7 +438,7 @@ export default function App() {
                   >
                     ← Back to hand
                   </button>
-                  <div className="big-nail">
+                  <Finger skin={m.skin}>
                     <NailCanvas
                       key={`${m.id}-${selectedNail}`}
                       nail={nail}
@@ -478,7 +451,7 @@ export default function App() {
                       onChange={editNail}
                       label={`Paint nail ${selectedNail + 1}`}
                     />
-                  </div>
+                  </Finger>
                   <div className="nail-selector" aria-label="Choose a nail">
                     {m.nails.map((n, i) => (
                       <button
@@ -592,10 +565,6 @@ export default function App() {
           }
         />
       </main>
-      <footer className="page-footer">
-        <span>Made for little artists ♡</span>
-        <span>Paint. Play. Sparkle. Repeat.</span>
-      </footer>
       {toast && (
         <div className="toast" role="status">
           {toast}

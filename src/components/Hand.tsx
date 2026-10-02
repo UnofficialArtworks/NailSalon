@@ -18,6 +18,9 @@ export function Hand({
     <div className={`hand-art ${small ? 'small' : ''}`}>
       <svg className="hand-skin" viewBox="0 0 440 550" aria-hidden="true">
         <defs>
+          <clipPath id={`${id}-wrist`}>
+            <path d={HAND_PATH} />
+          </clipPath>
           <linearGradient id={id} x1="0" x2="1" y1="0" y2=".5">
             <stop stopColor={manicure.skin} />
             <stop offset=".6" stopColor={manicure.skin} />
@@ -33,10 +36,14 @@ export function Hand({
           strokeWidth="2"
           strokeLinecap="round"
         />
-        <path d="M166 497Q240 514 334 497" fill="none" stroke="#efb74f" strokeWidth="11" />
-        <path d="M168 495Q242 511 331 495" fill="none" stroke="#ffe8a5" strokeWidth="3" />
-        <circle cx="255" cy="510" r="10" fill="#f1bf5a" />
-        <path d="m255 502 2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z" fill="#fff4cf" />
+        <g clipPath={`url(#${id}-wrist)`}>
+          <path d="M150 495Q240 517 339 495" fill="none" stroke="#e9aa32" strokeWidth="10" />
+          <path d="M150 493Q240 515 339 493" fill="none" stroke="#fff1b3" strokeWidth="3" />
+          <g transform="translate(245 506)">
+            <circle r="10" fill="#edb640" stroke="#fff0a3" strokeWidth="1.5" />
+            <path d="m0-7 2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z" fill="#fff9d6" />
+          </g>
+        </g>
       </svg>
       {manicure.nails.map((n, i) => {
         const b = NAIL_BOXES[i],
@@ -47,20 +54,21 @@ export function Hand({
             height: `${b.h / 5.5}%`,
             transform: `rotate(${b.r}deg)`,
           };
-        return onSelect ? (
-          <button
+        return (
+          <div
             key={i}
-            className={`hand-nail ${selected === i ? 'chosen' : ''}`}
+            className={`hand-nail ${onSelect && selected === i ? 'chosen' : ''}`}
             style={style}
-            aria-label={`Edit nail ${i + 1}`}
-            aria-pressed={selected === i}
-            onClick={() => onSelect(i)}
           >
             <NailCanvas nail={n} label={`Nail ${i + 1}`} />
-          </button>
-        ) : (
-          <div key={i} className="hand-nail" style={style}>
-            <NailCanvas nail={n} label={`Nail ${i + 1}`} />
+            {onSelect && (
+              <button
+                className="nail-hit-target"
+                aria-label={`Edit nail ${i + 1}`}
+                aria-pressed={selected === i}
+                onClick={() => onSelect(i)}
+              />
+            )}
           </div>
         );
       })}

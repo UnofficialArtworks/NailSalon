@@ -151,14 +151,14 @@ export const CUSTOMERS: Customer[] = [
   style: i,
 }));
 export const ROOM = [
-  { id: 'wall-0', name: 'Peach wallpaper', color: '#fff0e8' },
-  { id: 'desk-0', name: 'Rose desk', color: '#e6b5b1' },
+  { id: 'wall-0', name: 'Candy pink wallpaper', color: '#ffc4e8' },
+  { id: 'desk-0', name: 'Rose desk', color: '#ed84c8' },
   { id: 'accessory-0', name: 'Daisy vase', color: '#eabf61' },
-  { id: 'wall-1', name: 'Mint wallpaper', color: '#e4f1e6' },
-  { id: 'desk-1', name: 'Lilac desk', color: '#b8a5cd' },
+  { id: 'wall-1', name: 'Mint wallpaper', color: '#a4f0e5' },
+  { id: 'desk-1', name: 'Lilac desk', color: '#b78ce9' },
   { id: 'accessory-1', name: 'Little succulent', color: '#88b89c' },
-  { id: 'wall-2', name: 'Lilac wallpaper', color: '#eee6f6' },
-  { id: 'desk-2', name: 'Honey desk', color: '#d8b784' },
+  { id: 'wall-2', name: 'Lilac wallpaper', color: '#d6b5ff' },
+  { id: 'desk-2', name: 'Honey desk', color: '#ffd363' },
   { id: 'accessory-2', name: 'Lucky star', color: '#f3c750' },
 ];
 type Reward = {

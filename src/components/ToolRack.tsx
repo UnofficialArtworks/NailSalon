@@ -2,6 +2,8 @@ import { COLORS, PATTERNS, STICKERS, GEMS, SHAPES, SKINS, suppliesAt } from '../
 import type { Nail, Tool, Shape } from '../game/types';
 import { Icon, Bottle } from './Icon';
 import { uid } from '../game/rules';
+import { ToolPicture } from './ToolPicture';
+import { NailCanvas } from './NailCanvas';
 interface Props {
   stars: number;
   tool: Tool;
@@ -24,14 +26,14 @@ interface Props {
   remove: () => void;
   message: (s: string) => void;
 }
-const tools: { id: Tool; symbol: string; name: string }[] = [
-  { id: 'clean', symbol: '◌', name: 'Clean' },
-  { id: 'brush', symbol: '╱', name: 'Polish' },
-  { id: 'pattern', symbol: '▦', name: 'Patterns' },
-  { id: 'sticker', symbol: '♡', name: 'Stickers' },
-  { id: 'gem', symbol: '◇', name: 'Gems' },
-  { id: 'eraser', symbol: '▱', name: 'Eraser' },
-  { id: 'move', symbol: '↔', name: 'Move' },
+const tools: { id: Tool; name: string }[] = [
+  { id: 'clean', name: 'Clean' },
+  { id: 'brush', name: 'Polish' },
+  { id: 'pattern', name: 'Patterns' },
+  { id: 'sticker', name: 'Stickers' },
+  { id: 'gem', name: 'Gems' },
+  { id: 'eraser', name: 'Eraser' },
+  { id: 'move', name: 'Move' },
 ];
 export function ToolRack(p: Props) {
   const kit = suppliesAt(p.stars);
@@ -40,12 +42,6 @@ export function ToolRack(p: Props) {
     p.tool === 'pattern' ? kit.patterns : p.tool === 'sticker' ? kit.stickers : kit.gems;
   return (
     <aside className="tool-rack" aria-label="Nail art supplies">
-      <div className="rack-heading">
-        <span className="eyebrow">THE FUN PART</span>
-        <h2>
-          Your little art kit <span>✧</span>
-        </h2>
-      </div>
       <div className="tool-tabs">
         {tools.map((t) => (
           <button
@@ -59,8 +55,8 @@ export function ToolRack(p: Props) {
               if (t.id === 'gem') p.setSupply(kit.gems[0].id);
             }}
           >
-            <span aria-hidden="true">{t.symbol}</span>
-            {t.name}
+            <ToolPicture tool={t.id} />
+            <span className="tool-name">{t.name}</span>
           </button>
         ))}
       </div>
@@ -87,8 +83,9 @@ export function ToolRack(p: Props) {
                           : p.message('Serve customers to earn stars and unlock this polish!')
                       }
                     >
-                      <span style={{ background: c.color }}>
-                        {!available ? '♧' : p.color === c.id ? '✓' : ''}
+                      <Bottle color={c.color} size={48} />
+                      <span className="swatch-mark">
+                        {!available ? '🔒' : p.color === c.id ? '✓' : ''}
                       </span>
                     </button>
                   );
@@ -160,11 +157,23 @@ export function ToolRack(p: Props) {
                     }}
                   >
                     {p.tool === 'sticker' ? (
-                      <Icon id={item.id} />
+                      <Icon id={item.id} size={48} />
                     ) : p.tool === 'gem' ? (
                       <span className="gem-preview" style={{ background: item.color }} />
                     ) : (
-                      <span className={`pattern-preview pattern-${item.id.split('-')[1]}`} />
+                      <div className="pattern-tile">
+                        <NailCanvas
+                          nail={{
+                            ...p.nail,
+                            decorations: [],
+                            strokes: [],
+                            cleaned: true,
+                            fillColorId: p.color,
+                            patternId: item.id,
+                          }}
+                          label={item.name}
+                        />
+                      </div>
                     )}
                     <small>{item.name}</small>
                     {!available && <span className="lock-mark">♧</span>}
@@ -270,6 +279,19 @@ export function ToolRack(p: Props) {
                 aria-pressed={p.nail.shape === s.id}
                 onClick={() => p.changeShape(s.id)}
               >
+                <span className="shape-tile">
+                  <NailCanvas
+                    nail={{
+                      ...p.nail,
+                      shape: s.id,
+                      decorations: [],
+                      strokes: [],
+                      cleaned: true,
+                      patternId: null,
+                    }}
+                    label={`${s.name} shape`}
+                  />
+                </span>
                 {s.name}
               </button>
             ))}
@@ -289,10 +311,6 @@ export function ToolRack(p: Props) {
             </div>
           )}
         </details>
-      </div>
-      <div className="rack-footer">
-        <Bottle color={COLORS.find((c) => c.id === p.color)?.color ?? '#f597b7'} size={24} />
-        <span>There’s no wrong way to sparkle.</span>
       </div>
     </aside>
   );

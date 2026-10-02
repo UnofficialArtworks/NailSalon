@@ -12,6 +12,12 @@ The accepted plan is a standalone, gentle cartoon nail salon for ages 6–8. Fre
 - Customer requests cycle the 12 characters and deterministically select from the unlocked kit. Supply IDs and reward ordering are compatibility contracts for saved designs.
 - Each save transaction preserves the previous valid save. Invalid saves block autosave until explicit recovery; recovery retains the raw original backup.
 
+## Visual direction
+
+The salon uses a bright arcade presentation: star wallpaper, glossy polish, round illustrated tools, and a horizontally scrolling supply tray. Gameplay labels stay short; the replayable tutorial carries the detailed instructions. All illustrations remain original SVG or Canvas artwork.
+
+The hand uses fixed artwork bounds with separate 48-pixel touch targets, preventing mobile button sizing from displacing nails. Nail silhouettes fit the hand for every supported shape. The enlarged finger narrows toward its tip and widens toward the hand; its artwork bounds live in `src/art/finger.ts`. The bracelet is clipped to the wrist silhouette. Browser regression checks cover geometry, touch target size, taper direction, and phone selector access.
+
 ## Quality boundaries
 
 Always retain recoverable artwork, validate persisted data, keep touch targets at least 48 CSS pixels, support reduced motion, and use local assets. Test behavior with Vitest and complete flows in Playwright. Run checks before publishing. Never silently reset saves, discard gallery entries, duplicate customer rewards, suppress errors to make tests pass, or upload personal game data.

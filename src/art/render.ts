@@ -165,9 +165,20 @@ export function renderNail(
       ctx.fill();
     }
   }
-  ctx.fillStyle = '#ffffff40';
+  const shine = ctx.createLinearGradient(0, 0, 1, 0);
+  shine.addColorStop(0, '#43144e24');
+  shine.addColorStop(0.24, '#ffffff18');
+  shine.addColorStop(0.65, '#ffffff00');
+  shine.addColorStop(1, '#43144e30');
+  ctx.fillStyle = shine;
+  ctx.fillRect(0, 0, 1, 1);
+  ctx.fillStyle = '#ffffff85';
   ctx.beginPath();
-  ctx.ellipse(0.24, 0.33, 0.025, 0.16, -0.1, 0, Math.PI * 2);
+  ctx.ellipse(0.23, 0.34, 0.027, 0.21, 0.04, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#ffffff45';
+  ctx.beginPath();
+  ctx.ellipse(0.76, 0.57, 0.018, 0.14, 0.04, 0, Math.PI * 2);
   ctx.fill();
   ctx.restore();
   ctx.strokeStyle = '#6b464432';
@@ -189,11 +200,11 @@ export function renderNail(
 }
 // Same geometry is used for the on-screen hand and PNG exports.
 export const NAIL_BOXES = [
-  { x: 41, y: 249, w: 60, h: 79, r: -35 },
-  { x: 126, y: 104, w: 52, h: 73, r: -7 },
-  { x: 204, y: 62, w: 54, h: 78, r: 0 },
-  { x: 282, y: 101, w: 52, h: 73, r: 7 },
-  { x: 354, y: 173, w: 46, h: 66, r: 13 },
+  { x: 40, y: 267, w: 49, h: 62, r: -35 },
+  { x: 121, y: 105, w: 50, h: 68, r: -3 },
+  { x: 193, y: 60, w: 53, h: 76, r: 0 },
+  { x: 273, y: 107, w: 50, h: 68, r: 6 },
+  { x: 348, y: 180, w: 46, h: 63, r: 13 },
 ];
 export const HAND_PATH =
   'M157 535C159 488 132 437 111 410L48 333C23 307 21 282 39 269C58 250 77 262 98 288L124 314L115 145C113 113 127 94 146 96C167 97 177 113 177 142L181 274L183 100C183 64 195 47 219 47C244 47 254 65 254 99L254 274L263 140C265 109 279 92 300 97C321 102 327 119 324 151L317 293L334 212C340 182 352 164 373 169C394 174 402 192 396 222L375 362C370 412 342 452 334 485L331 535Z';
