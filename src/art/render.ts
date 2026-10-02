@@ -1,25 +1,10 @@
+import { nailContour } from './contour';
 import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
-  const p = new Path2D();
-  if (shape === 'oval') {
-    p.ellipse(0.5, 0.49, 0.42, 0.445, 0, 0, Math.PI * 2);
-  } else if (shape === 'almond') {
-    p.moveTo(0.5, 0.025);
-    p.bezierCurveTo(0.82, 0.15, 0.92, 0.42, 0.92, 0.72);
-    p.bezierCurveTo(0.92, 0.99, 0.08, 0.99, 0.08, 0.72);
-    p.bezierCurveTo(0.08, 0.42, 0.18, 0.15, 0.5, 0.025);
-  } else if (shape === 'square' || shape === 'soft-square') {
-    p.roundRect(0.08, 0.05, 0.84, 0.88, shape === 'square' ? 0.045 : 0.15);
-  } else {
-    p.moveTo(0.08, 0.7);
-    p.bezierCurveTo(0.08, 0.18, 0.18, 0.045, 0.5, 0.045);
-    p.bezierCurveTo(0.82, 0.045, 0.92, 0.18, 0.92, 0.7);
-    p.bezierCurveTo(0.92, 1, 0.08, 1, 0.08, 0.7);
-  }
-  p.closePath();
-  return p;
+  const { start, upper, lower } = nailContour(shape);
+  return new Path2D('M' + start + ' ' + upper + ' ' + lower + 'Z');
 }
 export function drawIcon(
   ctx: CanvasRenderingContext2D,
