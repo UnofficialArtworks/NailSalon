@@ -83,9 +83,9 @@ export function nailShine(
   if (surface) {
     surface.width = width;
     surface.height = height;
-    // Materialize the pre-shine pixels. WebKit can defer canvas-to-canvas
-    // copies, allowing the later shine pass to leak into a matte snapshot.
-    surface.getContext('2d')!.putImageData(ctx.getImageData(0, 0, width, height), 0, 0);
+    const snapshot = surface.getContext('2d')!;
+    snapshot.globalCompositeOperation = 'source-over';
+    snapshot.drawImage(ctx.canvas, 0, 0);
   }
   const shineCtx = ctx;
   const shine = shineCtx.createLinearGradient(0, 0, 1, 0);
@@ -110,6 +110,9 @@ export function nailShine(
   mask.width = width;
   mask.height = height;
   const mc = mask.getContext('2d')!;
+  // Explicitly reset reused canvas state: an erased nail leaves destination-out
+  // active, and WebKit may retain it when dimensions are assigned unchanged.
+  mc.globalCompositeOperation = 'source-over';
   mc.fillStyle = '#fff';
   mc.strokeStyle = '#fff';
   mc.lineCap = mc.lineJoin = 'round';
