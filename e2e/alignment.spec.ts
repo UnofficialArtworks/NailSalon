@@ -78,10 +78,10 @@ test('the enlarged fingertip narrows toward its tip and contains every nail shap
   await page.getByRole('button', { name: 'Edit nail 3', exact: true }).click();
   const geometry = await page.evaluate(
     async (paths) => {
-      const { FINGER_PATH, FINGER_NAIL: box } = await import(paths[0]);
+      const { fingerPath, FINGER_NAIL: box } = await import(paths[0]);
       const { nailPath } = await import(paths[1]);
       const ctx = document.createElement('canvas').getContext('2d')!;
-      const skin = new Path2D(FINGER_PATH);
+      const skin = new Path2D(fingerPath('round'));
       const span = (y: number) => {
         let width = 0;
         for (let x = 0; x < 240; x++) if (ctx.isPointInPath(skin, x, y)) width++;
@@ -90,6 +90,7 @@ test('the enlarged fingertip narrows toward its tip and contains every nail shap
       let outside = 0;
       for (const shape of ['round', 'oval', 'square', 'soft-square', 'almond']) {
         const nail = nailPath(shape);
+        const skin = new Path2D(fingerPath(shape));
         for (let x = 0.1; x < 0.9; x += 0.025)
           for (let y = 0.05; y < 0.95; y += 0.025) {
             if (

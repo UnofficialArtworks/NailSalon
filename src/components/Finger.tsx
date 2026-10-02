@@ -1,9 +1,19 @@
 import { useId, type ReactNode } from 'react';
-import { FINGER_PATH, FINGER_NAIL as box } from '../art/finger';
+import { fingerPath, FINGER_NAIL as box } from '../art/finger';
+import type { Shape } from '../game/types';
 
 // The finger is a backdrop: painting continues to use normalized nail coordinates.
-export function Finger({ skin, children }: { skin: string; children: ReactNode }) {
+export function Finger({
+  skin,
+  shape,
+  children,
+}: {
+  skin: string;
+  shape: Shape;
+  children: ReactNode;
+}) {
   const id = useId();
+  const outline = fingerPath(shape);
   return (
     <div className="big-nail">
       <svg className="finger-skin" viewBox="0 0 240 420" aria-hidden="true">
@@ -17,8 +27,8 @@ export function Finger({ skin, children }: { skin: string; children: ReactNode }
           </linearGradient>
         </defs>
         <g>
-          <path d={FINGER_PATH} fill={skin} />
-          <path d={FINGER_PATH} fill={`url(#${id}-depth)`} />
+          <path d={outline} fill={skin} />
+          <path d={outline} fill={`url(#${id}-depth)`} />
           <path
             d="M64 330Q118 339 176 330M77 337Q121 342 163 337"
             fill="none"

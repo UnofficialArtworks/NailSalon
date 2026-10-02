@@ -438,7 +438,7 @@ export default function App() {
                   >
                     ← Back to hand
                   </button>
-                  <Finger skin={m.skin}>
+                  <Finger skin={m.skin} shape={nail.shape}>
                     <NailCanvas
                       key={`${m.id}-${selectedNail}`}
                       nail={nail}
