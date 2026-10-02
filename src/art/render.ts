@@ -7,6 +7,7 @@ import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
 import { lengthBox } from './length';
 import { polishPaint } from './material';
+import { DIRT_SPOTS } from '../game/preparation';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
   const { start, upper, lower } = nailContour(shape);
@@ -202,10 +203,15 @@ export function renderNail(
   if (nail.patternId) pattern(ctx, nail.patternId, nail.patternColorId);
   for (const d of nail.decorations) drawDecoration(ctx, d, width / height);
   if (!nail.cleaned && !nail.baseColorId && nail.strokes.length === 0) {
-    ctx.fillStyle = '#bc927966';
-    for (let i = 0; i < 5; i++) {
+    for (const [i, spot] of DIRT_SPOTS.entries()) {
+      if ((nail.washed ?? 0) & (1 << i)) continue;
+      ctx.fillStyle = '#b48b6a88';
       ctx.beginPath();
-      ctx.arc(0.25 + i * 0.1, 0.36 + (i % 2) * 0.2, 0.025, 0, Math.PI * 2);
+      ctx.ellipse(spot.x, spot.y, 0.046, 0.046 * width / height, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#fff2dd88';
+      ctx.beginPath();
+      ctx.ellipse(spot.x - 0.01, spot.y - 0.006, 0.012, 0.012 * width / height, 0, 0, Math.PI * 2);
       ctx.fill();
     }
   }

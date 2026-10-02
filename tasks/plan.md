@@ -14,3 +14,7 @@ Photo studio, new customer story content and tactile preparation activities foll
 ## Photo studio milestone — October 2, 2026
 
 Implemented selectable illustrated photo backdrops, shared preview/export hand and jewelry artwork, replayable reduced-motion-aware reveal, optional rings/bracelets, scrapbook naming and favorites. Existing saved photos preserve default styling. Metadata and new photo fields use compatible validation; photo changes are protected as unsaved edits. Follow-up work: tactile preparation and customer occasion content. Physical iPad Safari and child playtesting still require the actual device.
+
+## Playful preparation milestone — October 2, 2026
+
+Reviewed and preserved Claude's supplied hand/customer model changes. Implemented the first tactile preparation activity: localized dirt removal, pointer-following bubbly sponge, progress feedback and reduced-motion-aware completion sparkles. Tap cleaning and skipping remain available; shape/length previews follow washing. Compatible partial progress survives cancellation, history, reload and rotation. Verified with 31 unit tests and 120 browser checks across all three engines, plus phone/tablet/desktop visual inspection. Separate file interaction and customer occasion content remain future options.

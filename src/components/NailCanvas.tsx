@@ -2,6 +2,8 @@ import { useEffect, useRef, type PointerEvent as ReactPointerEvent } from 'react
 import { nailPath, renderNail } from '../art/render';
 import { uid } from '../game/rules';
 import type { Nail, Tool, Stroke, Point } from '../game/types';
+import { SPONGE_WIDTH, washNail, washedCount } from '../game/preparation';
+import { CleaningSponge } from './CleaningSponge';
 interface Props {
   nail: Nail;
   tool?: Tool;
@@ -26,6 +28,8 @@ export function NailCanvas({
 }: Props) {
   const ref = useRef<HTMLCanvasElement>(null),
     cursor = useRef<HTMLSpanElement>(null),
+    sponge = useRef<HTMLSpanElement>(null),
+    washMeter = useRef<HTMLSpanElement>(null),
     active = useRef<{
       id: number;
       stroke: Stroke;
@@ -33,6 +37,7 @@ export function NailCanvas({
       moveId: string | null;
       nail: Nail;
       source: Nail;
+      tool: Tool;
     } | null>(null),
     frame = useRef(0),
     dirty = useRef(false);
@@ -60,6 +65,7 @@ export function NailCanvas({
         selected,
       );
       sizeCursor();
+      showWashProgress(active.current?.nail ?? latest.current.nail);
     }
     const observer = new ResizeObserver(render);
     observer.observe(canvas);
@@ -73,6 +79,7 @@ export function NailCanvas({
   useEffect(() => {
     const flush = () => {
       if (cursor.current) cursor.current.style.display = 'none';
+      if (sponge.current) sponge.current.style.display = 'none';
       const a = active.current;
       if (!a) return;
       active.current = null;
@@ -91,7 +98,10 @@ export function NailCanvas({
       document.removeEventListener('visibilitychange', visibility);
       window.removeEventListener('blur', flush);
     };
-  }, []);
+  }, [tool]);
+  function showWashProgress(n: Nail) {
+    if (washMeter.current) washMeter.current.style.width = `${(washedCount(n) / 9) * 100}%`;
+  }
   function sizeCursor() {
     if (!cursor.current || !ref.current) return;
     const diameter =
@@ -107,6 +117,16 @@ export function NailCanvas({
     cursor.current.style.display = 'block';
     cursor.current.style.left = `${e.clientX - r.left}px`;
     cursor.current.style.top = `${e.clientY - r.top}px`;
+  }
+  function pointSponge(e: ReactPointerEvent<HTMLCanvasElement>) {
+    if (!sponge.current || tool !== 'clean' || active.current?.id !== e.pointerId) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const size = r.width * SPONGE_WIDTH;
+    sponge.current.style.width = `${size}px`;
+    sponge.current.style.height = `${size}px`;
+    sponge.current.style.display = 'block';
+    sponge.current.style.left = `${e.clientX - r.left}px`;
+    sponge.current.style.top = `${e.clientY - r.top}px`;
   }
   function position(event: ReactPointerEvent<HTMLCanvasElement>): Point {
     const r = event.currentTarget.getBoundingClientRect();
@@ -128,6 +148,7 @@ export function NailCanvas({
           canvas.height,
           selected,
         );
+      if (active.current) showWashProgress(active.current.nail);
     });
   }
   function down(e: ReactPointerEvent<HTMLCanvasElement>) {
@@ -144,7 +165,7 @@ export function NailCanvas({
       ctx = e.currentTarget.getContext('2d')!;
     if (!ctx.isPointInPath(nailPath(nail.shape), p.x, p.y)) return;
     e.currentTarget.setPointerCapture(e.pointerId);
-    const next = structuredClone(nail);
+    let next = structuredClone(nail);
     if (tool === 'sticker' || tool === 'gem') {
       if (next.decorations.length >= 100) return;
       const id = uid();
@@ -184,10 +205,12 @@ export function NailCanvas({
       next.cleaned = true;
       if (tool === 'brush') next.baseColorId = colorId;
     }
-    if (tool === 'clean') next.cleaned = true;
-    active.current = { id: e.pointerId, stroke, start: p, moveId, nail: next, source: nail };
+    if (tool === 'clean')
+      next = washNail(next, p, p, e.currentTarget.height / e.currentTarget.width);
+    active.current = { id: e.pointerId, stroke, start: p, moveId, nail: next, source: nail, tool };
     pointCursor(e);
-    dirty.current = tool !== 'move';
+    pointSponge(e);
+    dirty.current = tool === 'clean' ? next.washed !== nail.washed : tool !== 'move';
     schedule();
   }
   function move(e: ReactPointerEvent<HTMLCanvasElement>) {
@@ -195,7 +218,13 @@ export function NailCanvas({
     const a = active.current;
     if (!a || a.id !== e.pointerId) return;
     const p = position(e);
-    if (a.moveId) {
+    pointSponge(e);
+    if (a.tool === 'clean') {
+      const next = washNail(a.nail, a.start, p, e.currentTarget.height / e.currentTarget.width);
+      if (next !== a.nail) dirty.current = true;
+      a.nail = next;
+      a.start = p;
+    } else if (a.moveId) {
       const d = a.nail.decorations.find((d) => d.id === a.moveId)!;
       d.x = p.x;
       d.y = p.y;
@@ -211,6 +240,7 @@ export function NailCanvas({
     const a = active.current;
     if (!a || a.id !== e.pointerId) return;
     active.current = null;
+    if (sponge.current) sponge.current.style.display = 'none';
     if (cursor.current && e.pointerType === 'touch') cursor.current.style.display = 'none';
     cancelAnimationFrame(frame.current);
     frame.current = 0;
@@ -220,7 +250,7 @@ export function NailCanvas({
       e.currentTarget.releasePointerCapture(e.pointerId);
   }
   return (
-    <span className="nail-surface">
+    <span className="nail-surface" data-cleaned={nail.cleaned}>
       <canvas
         ref={ref}
         className={onChange ? 'nail-canvas interactive' : 'nail-canvas'}
@@ -239,6 +269,22 @@ export function NailCanvas({
       />
       {onChange && (tool === 'brush' || tool === 'eraser') && (
         <span ref={cursor} className="brush-cursor" aria-hidden="true" />
+      )}
+      {onChange && tool === 'clean' && (
+        <>
+          <span ref={sponge} className="cleaning-sponge">
+            <CleaningSponge />
+          </span>
+          {nail.cleaned ? (
+            <span className="clean-sparkles" aria-hidden="true">
+              ✧<i>✦</i>✧
+            </span>
+          ) : (
+            <span className="wash-meter" aria-hidden="true">
+              <span ref={washMeter} />
+            </span>
+          )}
+        </>
       )}
     </span>
   );

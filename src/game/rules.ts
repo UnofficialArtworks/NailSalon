@@ -57,6 +57,7 @@ export function hasManicureEdits(manicure: Manicure): boolean {
   return manicure.nails.some(
     (n) =>
       n.cleaned ||
+      (n.washed ?? 0) > 0 ||
       n.shape !== 'round' ||
       (n.length !== undefined && n.length !== 'short') ||
       (n.finish !== undefined && n.finish !== 'glossy') ||

@@ -1,7 +1,8 @@
 import { SHAPES, SKINS } from '../game/catalog';
 import type { Nail, Shape, NailLength } from '../game/types';
 import { NailCanvas } from './NailCanvas';
-import { ToolPicture } from './ToolPicture';
+import { DIRT_SPOTS, washedCount } from '../game/preparation';
+import { CleaningSponge } from './CleaningSponge';
 
 export function ManicurePrep({
   nail,
@@ -25,12 +26,26 @@ export function ManicurePrep({
   return (
     <section className="manicure-prep" aria-label="Manicure preparation">
       <div className="prep-heading">
-        <ToolPicture tool="clean" />
+        <span className="prep-sponge-picture">
+          <CleaningSponge />
+        </span>
         <div>
           <h3>1. Wash & wipe</h3>
-          <p>Swipe your nail, or tap to clean.</p>
+          <p>Wipe the little spots with your bubbly sponge!</p>
         </div>
         <button onClick={clean}>{nail.cleaned ? 'Clean again' : 'Clean this nail'}</button>
+      </div>
+      <div className="wash-progress" role="status" aria-live="polite">
+        <span className="wash-bubbles" aria-hidden="true">
+          {DIRT_SPOTS.map((_, i) => (
+            <span key={i} className={i < washedCount(nail) ? 'washed' : ''} />
+          ))}
+        </span>
+        <span>
+          {nail.cleaned
+            ? 'Sparkly clean! Choose a length & shape.'
+            : `${washedCount(nail)} of 9 spots washed`}
+        </span>
       </div>
       <h3>2. Choose your nail length</h3>
       <div className="length-buttons" aria-label="Nail length">
@@ -91,6 +106,9 @@ export function ManicurePrep({
       <button className="primary full-width" onClick={paint}>
         Start painting →
       </button>
+      {!nail.cleaned && (
+        <p className="little-note">You can paint whenever you like. Washing is just for fun!</p>
+      )}
     </section>
   );
 }

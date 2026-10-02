@@ -27,6 +27,8 @@ export interface Nail {
   finish?: Finish;
   patternColorId?: string | null;
   cleaned: boolean;
+  /** Bit mask of washed dirt spots; absent in first-release saves. */
+  washed?: number;
   baseColorId: string | null;
   fillColorId: string | null;
   strokes: Stroke[];

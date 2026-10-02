@@ -18,6 +18,7 @@ function nail(v: unknown): boolean {
       v.patternColorId !== null &&
       !id(v.patternColorId, COLORS)) ||
     typeof v.cleaned !== 'boolean' ||
+    (v.washed !== undefined && (!number(v.washed, 0, 511) || !Number.isInteger(v.washed))) ||
     (v.baseColorId !== null && !id(v.baseColorId, COLORS)) ||
     (v.fillColorId !== null && !id(v.fillColorId, COLORS)) ||
     (v.patternId !== null && !id(v.patternId, PATTERNS))
