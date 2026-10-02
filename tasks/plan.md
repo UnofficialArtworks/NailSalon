@@ -10,3 +10,7 @@ Approved direction: playful creative studio, including short/medium/long nail le
 6. Unit and browser regression checks, visual inspection, documentation, commit and publish to authorized main branch.
 
 Photo studio, new customer story content and tactile preparation activities follow in a later milestone. Physical iPad Safari performance and daughter playtest require the user's device.
+
+## Photo studio milestone — October 2, 2026
+
+Implemented selectable illustrated photo backdrops, shared preview/export hand and jewelry artwork, replayable reduced-motion-aware reveal, optional rings/bracelets, scrapbook naming and favorites. Existing saved photos preserve default styling. Metadata and new photo fields use compatible validation; photo changes are protected as unsaved edits. Follow-up work: tactile preparation and customer occasion content. Physical iPad Safari and child playtesting still require the actual device.

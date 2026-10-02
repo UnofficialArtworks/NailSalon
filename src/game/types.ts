@@ -45,6 +45,12 @@ export interface Manicure {
   nails: Nail[];
   request: Request | null;
   rewarded: boolean;
+  photo?: PhotoSettings;
+}
+export interface PhotoSettings {
+  backdrop: 'cream' | 'candy' | 'ocean' | 'garden';
+  bracelet: 'gold' | 'pearls' | 'none';
+  ring: 'none' | 'heart' | 'flower';
 }
 export interface Supply {
   id: string;
@@ -63,6 +69,8 @@ export interface GalleryEntry {
   id: string;
   createdAt: string;
   manicure: Manicure;
+  name?: string;
+  favorite?: boolean;
 }
 export interface Save {
   version: 1;

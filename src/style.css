@@ -1783,3 +1783,220 @@ h3 {
     height: 50px;
   }
 }
+/* Photo studio: the 440 × 550 scene is shared with PNG export. */
+.photo-studio {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 1fr);
+  gap: 20px;
+  align-items: center;
+}
+.photo-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 440/550;
+  overflow: hidden;
+  border-radius: 25px;
+  box-shadow: 0 6px 16px #9a51932a;
+}
+.photo-preview > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.photo-hand {
+  position: absolute;
+  inset: 0;
+  animation: photo-arrive 0.65s ease-out;
+}
+.photo-hand .hand-art {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  filter: none;
+  margin: 0;
+}
+.photo-glint {
+  position: absolute;
+  left: 76%;
+  top: 12%;
+  font-size: 36px;
+  color: white;
+  pointer-events: none;
+  animation: photo-sparkle 0.8s ease-out both;
+}
+.photo-options fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0 0 14px;
+}
+.photo-options legend {
+  font-weight: 700;
+  padding: 0 0 8px;
+  color: #8e387d;
+  text-align: left;
+}
+.photo-choices {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.photo-choices button {
+  flex: 1;
+  min-width: 64px;
+  min-height: 66px;
+  padding: 7px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.photo-choices button[aria-pressed='true'],
+.scrapbook-tabs button[aria-pressed='true'] {
+  background: #ffe492;
+  border-color: #d59237;
+  box-shadow: 0 0 0 2px #fff inset;
+}
+.photo-choices button > span {
+  font-size: 25px;
+  line-height: 28px;
+  color: #bf65a7;
+}
+.jewelry-swatch {
+  width: 46px;
+  height: 28px;
+  overflow: visible;
+}
+.bracelet-swatch {
+  width: 62px;
+}
+.backdrop-swatch {
+  display: block;
+  width: 42px;
+  height: 30px;
+  border-radius: 9px;
+  border: 2px solid white;
+}
+.scrapbook-tabs {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+.gallery-card {
+  position: relative;
+  background: #fff9ef;
+  border: 2px solid white;
+  box-shadow: 0 5px 12px #aa70a52b;
+  padding: 12px 12px 16px;
+}
+.gallery-card::before {
+  content: '';
+  display: block;
+  position: absolute;
+  width: 60px;
+  height: 20px;
+  top: -10px;
+  left: calc(50% - 30px);
+  background: #e0b4efab;
+  transform: rotate(-6deg);
+  z-index: 1;
+  pointer-events: none;
+}
+.gallery-card .photo-preview {
+  border-radius: 12px;
+}
+.gallery-card .photo-hand .hand-art {
+  width: 100%;
+  margin: 0;
+}
+.gallery-card .photo-hand {
+  animation: none;
+}
+.gallery-card .photo-glint {
+  display: none;
+}
+.gallery-card h3 {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  padding-right: 30px;
+  text-align: left;
+  margin-top: 12px;
+}
+.favorite-button {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  min-width: 48px;
+  color: #da3b91;
+  font-size: 25px;
+}
+.rename-button {
+  font-size: 12px;
+  min-height: 48px;
+}
+.rename-design {
+  text-align: left;
+}
+.rename-design label {
+  display: block;
+  font-size: 13px;
+}
+.rename-design input {
+  display: block;
+  width: 100%;
+  min-height: 48px;
+  border: 2px solid #d9a1e7;
+  border-radius: 10px;
+  margin: 8px 0;
+  padding: 8px;
+  font: inherit;
+  box-sizing: border-box;
+}
+.rename-design button {
+  min-height: 48px;
+  margin: 0 4px 8px 0;
+}
+@keyframes photo-arrive {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes photo-sparkle {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+@media (max-width: 600px) {
+  .photo-studio {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .photo-studio > .photo-preview {
+    width: min(100%, 240px);
+    margin: auto;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .photo-hand,
+  .photo-glint {
+    animation: none;
+  }
+  .photo-glint {
+    display: none;
+  }
+}

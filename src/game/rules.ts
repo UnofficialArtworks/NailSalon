@@ -1,5 +1,6 @@
 import { COLORS, CUSTOMERS, SKINS, suppliesAt } from './catalog';
 import type { Save, Manicure, Request, Wishes, Nail, Point, GalleryEntry } from './types';
+import { samePhoto, DEFAULT_PHOTO } from './photo';
 export const uid = (): string =>
   crypto.randomUUID?.() ??
   Array.from(crypto.getRandomValues(new Uint8Array(16)), (n) =>
@@ -52,6 +53,7 @@ export function startManicure(save: Save, mode: 'free' | 'customer'): Save {
   return { ...save, active };
 }
 export function hasManicureEdits(manicure: Manicure): boolean {
+  if (!samePhoto(manicure, { ...manicure, photo: DEFAULT_PHOTO })) return true;
   return manicure.nails.some(
     (n) =>
       n.cleaned ||
@@ -70,7 +72,10 @@ export function designIsSaved(manicure: Manicure, gallery: GalleryEntry[]): bool
   if (!entries.length) return false;
   const nails = JSON.stringify(manicure.nails);
   return entries.some(
-    ({ manicure: saved }) => saved.skin === manicure.skin && JSON.stringify(saved.nails) === nails,
+    ({ manicure: saved }) =>
+      saved.skin === manicure.skin &&
+      JSON.stringify(saved.nails) === nails &&
+      samePhoto(saved, manicure),
   );
 }
 export function scoreRequest(manicure: Manicure, request: Request): Wishes {

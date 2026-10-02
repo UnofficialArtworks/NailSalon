@@ -27,3 +27,9 @@ Sticker artwork uses layered original vector illustrations with consistent outli
 Always retain recoverable artwork, validate persisted data, keep touch targets at least 48 CSS pixels, support reduced motion, and use local assets. Test behavior with Vitest and complete flows in Playwright. Run checks before publishing. Never silently reset saves, discard gallery entries, duplicate customer rewards, suppress errors to make tests pass, or upload personal game data.
 
 Browser tests run in isolated profiles. The native iPad Safari and child playtest remain human release checkpoints. GitHub hosting needs a remote repository and Pages configuration; a local build alone does not mean the game is deployed.
+
+## Photo studio and scrapbook
+
+The reveal now offers four original local SVG backdrops, optional golden-star or pearl bracelets, heart/flower rings and a replayable arrival. The photo is a 440×550 scene: hand geometry, shading and jewelry SVG are shared by the React preview and Canvas PNG renderer. Nail artwork uses the existing renderer and length bounds. PNG export is 880×1100, preserving the preview crop. Jewelry anchors are fixed to hand coordinates; effects are presentation-only and respect reduced motion.
+
+Optional manicure.photo and gallery name/favorite fields preserve version-1 saves. Old photos default to peach satin, the original gold bracelet and no ring. Validation rejects unknown photo options and malformed metadata through existing recovery. Photo choices participate in saved-design detection and replacement protection; names/favorites do not change artwork. Saved entries retain independent snapshots. The scrapbook provides inline naming, favorite filtering, edit-a-copy, picture export and confirmed removal; its 50-entry limit remains explicit.

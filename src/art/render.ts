@@ -1,3 +1,7 @@
+import { backdropSvg, handSkinSvg, sceneSvg } from './photoScene';
+import { photoSettings } from '../game/photo';
+import { NAIL_BOXES } from './handGeometry';
+export { HAND_PATH, NAIL_BOXES } from './handGeometry';
 import { nailContour } from './contour';
 import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
@@ -238,50 +242,23 @@ export function renderNail(
   }
   ctx.restore();
 }
-// Same geometry is used for the on-screen hand and PNG exports.
-// Lift along each finger's axis for a small free edge; exports share these boxes.
-const HAND_NAIL_LIFTS = [11.4, 19.5, 19.7, 19.5, 18.6];
-export const NAIL_BOXES = [
-  { x: 354, y: 236, w: 43, h: 65, r: 24 },
-  { x: 257, y: 100, w: 46, h: 72, r: 4 },
-  { x: 183, y: 52, w: 47, h: 76, r: 0 },
-  { x: 110, y: 95, w: 44, h: 70, r: -4 },
-  { x: 43, y: 184, w: 37, h: 57, r: -10 },
-].map(({ x, y, w, h, r }, i) => {
-  const angle = (r * Math.PI) / 180;
-  const lift = HAND_NAIL_LIFTS[i];
-  return {
-    x: x - w * 0.025 + Math.sin(angle) * lift,
-    y: y - h * 0.025 - Math.cos(angle) * lift,
-    w: w * 1.05,
-    h: h * 1.05,
-    r,
-  };
-});
-export const HAND_PATH =
-  'M104 550C106 505 78 465 70 421C64 389 58 355 53 320L33 216C28 188 38 172 56 170C75 168 88 183 92 207L110 325Q114 339 118 324L101 126C99 97 110 81 130 80C151 79 162 96 163 124L173 312Q175 328 179 312L177 82C177 53 188 37 207 37C228 37 240 54 240 82L242 312Q244 328 249 313L250 128C250 99 262 84 281 85C302 86 314 103 311 132L300 351Q300 368 311 352L343 264C353 237 369 224 388 231C408 238 412 257 402 283L369 380C359 417 340 449 325 478C316 497 316 524 318 550Z';
 export async function exportManicure(m: Manicure): Promise<Blob> {
   const c = document.createElement('canvas');
-  c.width = 1000;
+  c.width = 880;
   c.height = 1100;
   const ctx = c.getContext('2d')!;
-  ctx.fillStyle = '#fff5ed';
-  ctx.fillRect(0, 0, c.width, c.height);
-  ctx.fillStyle = '#70415a';
-  ctx.font = 'bold 54px Georgia';
-  ctx.textAlign = 'center';
-  ctx.fillText('Nail Salon', 500, 86);
-  ctx.font = '24px sans-serif';
-  ctx.fillStyle = '#957688';
-  ctx.fillText('Made with a little imagination', 500, 126);
+  const svg = sceneSvg(backdropSvg(photoSettings(m)) + handSkinSvg(m, 'photo'));
+  const image = new Image();
+  const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+  try {
+    image.src = url;
+    await image.decode();
+    ctx.drawImage(image, 0, 0, c.width, c.height);
+  } finally {
+    URL.revokeObjectURL(url);
+  }
   ctx.save();
-  ctx.translate(159, 140);
-  ctx.scale(1.55, 1.55);
-  ctx.fillStyle = m.skin;
-  ctx.strokeStyle = '#6d483344';
-  ctx.lineWidth = 2;
-  ctx.fill(new Path2D(HAND_PATH));
-  ctx.stroke(new Path2D(HAND_PATH));
+  ctx.scale(2, 2);
   m.nails.forEach((n, i) => {
     const b = lengthBox(NAIL_BOXES[i], n.length);
     const tile = document.createElement('canvas');
@@ -295,9 +272,6 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
     ctx.restore();
   });
   ctx.restore();
-  ctx.fillStyle = '#b18a9e';
-  ctx.font = '22px sans-serif';
-  ctx.fillText('Your own tiny masterpiece ♡', 500, 1050);
   return new Promise((resolve, reject) =>
     c.toBlob(
       (b) => (b ? resolve(b) : reject(new Error('Picture could not be created.'))),

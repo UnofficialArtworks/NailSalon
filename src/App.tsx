@@ -29,6 +29,7 @@ import { useTutorial } from './editor/useTutorial';
 import { CopyNails } from './components/CopyNails';
 import { copyNailArt } from './game/studio';
 import { StudioStages } from './components/StudioStages';
+import { PhotoStudio } from './components/PhotoStudio';
 type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
@@ -63,7 +64,7 @@ export default function App() {
   pictureRef.current = picture;
   const savedReveal = useMemo(
     () => designIsSaved(save.active, save.gallery),
-    [save.active.nails, save.active.skin, save.active.id, save.gallery],
+    [save.active.nails, save.active.skin, save.active.id, save.active.photo, save.gallery],
   );
   const guide = useTutorial(save.active, zoom, tool, panel === 'reveal', savedReveal);
   useEffect(() => {
@@ -634,6 +635,12 @@ export default function App() {
             }
             onOpen={requestBegin}
             onExport={(g) => void exportPicture(g.manicure)}
+            onUpdate={(id, changes) =>
+              setSave((s) => ({
+                ...s,
+                gallery: s.gallery.map((g) => (g.id === id ? { ...g, ...changes } : g)),
+              }))
+            }
           />
         </Modal>
       )}
@@ -681,7 +688,7 @@ export default function App() {
         </Modal>
       )}
       {panel === 'reveal' && (
-        <Modal title="Look what you made!" onClose={() => setPanel(null)}>
+        <Modal title="Look what you made!" wide onClose={() => setPanel(null)}>
           <div className="reveal">
             {guide.step !== null && (
               <p className="guide-save-tip">
@@ -689,7 +696,10 @@ export default function App() {
               </p>
             )}
             <div className="reveal-stars">✧ ✦ ✧</div>
-            <Hand manicure={m} small />
+            <PhotoStudio
+              manicure={m}
+              onChange={(photo) => setSave((s) => ({ ...s, active: { ...s.active, photo } }))}
+            />
             {earned > 0 ? (
               <>
                 <h3>{customer?.name} loves her lovely nails!</h3>

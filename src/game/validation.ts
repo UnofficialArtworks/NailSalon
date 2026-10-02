@@ -63,6 +63,11 @@ function manicure(v: unknown): boolean {
     !['free', 'customer'].includes(String(v.mode)) ||
     !SKINS.includes(String(v.skin)) ||
     typeof v.rewarded !== 'boolean' ||
+    (v.photo !== undefined &&
+      (!object(v.photo) ||
+        !['cream', 'candy', 'ocean', 'garden'].includes(String(v.photo.backdrop)) ||
+        !['gold', 'pearls', 'none'].includes(String(v.photo.bracelet)) ||
+        !['none', 'heart', 'flower'].includes(String(v.photo.ring)))) ||
     !Array.isArray(v.nails) ||
     v.nails.length !== 5 ||
     !v.nails.every(nail)
@@ -94,6 +99,8 @@ export function validateSave(v: unknown): v is Save {
       (g) =>
         object(g) &&
         text(g.id) &&
+        (g.name === undefined || (typeof g.name === 'string' && g.name.length <= 40)) &&
+        (g.favorite === undefined || typeof g.favorite === 'boolean') &&
         typeof g.createdAt === 'string' &&
         Number.isFinite(Date.parse(g.createdAt)) &&
         manicure(g.manicure),
