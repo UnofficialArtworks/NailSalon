@@ -10,8 +10,8 @@ import {
   uid,
   hasManicureEdits,
 } from './game/rules';
-import { history, commit, undo, redo } from './game/history';
-import type { GalleryEntry, Manicure, Nail, Tool } from './game/types';
+import { useEditor } from './editor/useEditor';
+import type { GalleryEntry, Manicure, Tool } from './game/types';
 import { useSave } from './storage/useSave';
 import { audioSettings, audioVisibility, awakenAudio, disposeAudio, sound } from './audio/sound';
 import { exportManicure } from './art/render';
@@ -27,13 +27,10 @@ type Panel = 'tutorial' | 'gallery' | 'room' | 'reveal' | null;
 export default function App() {
   const { save, setSave, ready, notice, invalid, recover } = useSave();
   const [panel, setPanel] = useState<Panel>(null),
-    [selectedNail, setSelectedNail] = useState(0),
-    [zoom, setZoom] = useState(false),
     [tool, setTool] = useState<Tool>('brush'),
     [color, setColor] = useState('color-0'),
     [supply, setSupply] = useState('sticker-0'),
     [brush, setBrush] = useState(0.09),
-    [selectedDecoration, setSelectedDecoration] = useState<string | null>(null),
     [toast, setToast] = useState(''),
     [pending, setPending] = useState<'free' | 'customer' | GalleryEntry | null>(null),
     [picture, setPicture] = useState<string | null>(null),
@@ -41,18 +38,24 @@ export default function App() {
     [earned, setEarned] = useState(0),
     [oldStars, setOldStars] = useState(0),
     [savedReveal, setSavedReveal] = useState(false);
-  const [artHistory, setArtHistory] = useState(() => history(save.active.nails));
-  const historyRef = useRef(artHistory);
-  const activeId = useRef(save.active.id);
-  activeId.current = save.active.id;
-  historyRef.current = artHistory;
+  const {
+    nail,
+    selectedNail,
+    setSelectedNail,
+    selectedDecoration,
+    setSelectedDecoration,
+    zoom,
+    setZoom,
+    artHistory,
+    editNails,
+    editNail,
+    historyAction,
+    selectNail,
+    selectedAction,
+  } = useEditor(save, setSave);
   const pictureRef = useRef<string | null>(null);
   pictureRef.current = picture;
   useEffect(() => {
-    setArtHistory(history(save.active.nails));
-    setSelectedNail(0);
-    setSelectedDecoration(null);
-    setZoom(false);
     setSavedReveal(false);
   }, [save.active.id]);
   useEffect(() => {
@@ -75,39 +78,11 @@ export default function App() {
     return () => window.clearTimeout(t);
   }, [toast]);
   const m = save.active,
-    nail = m.nails[selectedNail],
     customer = CUSTOMERS.find((c) => c.id === m.request?.customerId),
     wishColor = COLORS.find((c) => c.id === m.request?.colorId),
     wishSticker = STICKERS.find((c) => c.id === m.request?.stickerId),
     next = MILESTONES.find((l) => l.stars > save.stars),
     score = m.request ? scoreRequest(m, m.request) : null;
-  function editNails(nails: Nail[]) {
-    // A departing canvas may flush after a new manicure has mounted.
-    if (activeId.current !== m.id) return;
-    const h = commit(historyRef.current, nails);
-    historyRef.current = h;
-    setArtHistory(h);
-    setSave((s) => (s.active.id === m.id ? { ...s, active: { ...s.active, nails } } : s));
-    sound('paint');
-  }
-  function editNail(n: Nail) {
-    const added = n.decorations.find((d) => !nail.decorations.some((old) => old.id === d.id));
-    if (added) setSelectedDecoration(added.id);
-    editNails(m.nails.map((old, i) => (i === selectedNail ? n : old)));
-  }
-  function historyAction(action: 'undo' | 'redo') {
-    const h = action === 'undo' ? undo(historyRef.current) : redo(historyRef.current);
-    historyRef.current = h;
-    setArtHistory(h);
-    setSave((s) => ({ ...s, active: { ...s.active, nails: h.present } }));
-    setSelectedDecoration(null);
-  }
-  function selectNail(i: number) {
-    setSelectedNail(i);
-    setSelectedDecoration(null);
-    setZoom(true);
-    sound();
-  }
   function begin(target: 'free' | 'customer' | GalleryEntry) {
     if (typeof target === 'string') setSave((s) => startManicure(s, target));
     else
@@ -174,18 +149,6 @@ export default function App() {
   function closePicture() {
     if (picture) URL.revokeObjectURL(picture);
     setPicture(null);
-  }
-  function selectedAction(remove = false) {
-    if (!selectedDecoration) return;
-    editNail({
-      ...nail,
-      decorations: remove
-        ? nail.decorations.filter((d) => d.id !== selectedDecoration)
-        : nail.decorations.map((d) =>
-            d.id === selectedDecoration ? { ...d, rotation: (d.rotation + 30) % 360 } : d,
-          ),
-    });
-    if (remove) setSelectedDecoration(null);
   }
   const roomColor = (id: string) => ROOM.find((r) => r.id === id)?.color;
   if (!ready)
