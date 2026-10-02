@@ -1,6 +1,8 @@
 import { nailContour } from './contour';
 import { colorOf, GEMS } from '../game/catalog';
 import { iconLayers } from './icons';
+import { lengthBox } from './length';
+import { polishPaint } from './material';
 import type { Nail, Shape, Manicure, Decoration } from '../game/types';
 export function nailPath(shape: Shape): Path2D {
   const { start, upper, lower } = nailContour(shape);
@@ -12,6 +14,7 @@ export function drawIcon(
   x: number,
   y: number,
   size: number,
+  tint?: string,
 ) {
   ctx.save();
   ctx.translate(x - size / 2, y - size / 2);
@@ -19,7 +22,7 @@ export function drawIcon(
   for (const layer of iconLayers(id)) {
     const path = new Path2D(layer.path);
     if (layer.fill !== 'none') {
-      ctx.fillStyle = layer.fill;
+      ctx.fillStyle = tint ?? layer.fill;
       ctx.fill(path);
     }
     if (layer.stroke) {
@@ -41,16 +44,36 @@ export function drawDecoration(ctx: CanvasRenderingContext2D, d: Decoration, asp
   else {
     const color = GEMS.find((g) => g.id === d.supplyId)?.color ?? '#f4c7d7';
     const r = d.size / 2;
+    const kind = Number(d.supplyId.split('-')[1]) % 6;
     ctx.fillStyle = color;
     ctx.beginPath();
-    ctx.moveTo(0, -r);
-    ctx.lineTo(r * 0.8, -r * 0.4);
-    ctx.lineTo(r * 0.8, r * 0.45);
-    ctx.lineTo(0, r);
-    ctx.lineTo(-r * 0.8, r * 0.45);
-    ctx.lineTo(-r * 0.8, -r * 0.4);
+    if (kind === 4 || kind === 2) {
+      ctx.ellipse(0, 0, kind === 2 ? r * 0.72 : r, r, 0, 0, Math.PI * 2);
+    } else if (kind === 3) {
+      ctx.moveTo(0, r);
+      ctx.bezierCurveTo(-r * 2, -r * 0.2, -r * 0.8, -r * 1.7, 0, -r * 0.5);
+      ctx.bezierCurveTo(r * 0.8, -r * 1.7, r * 2, -r * 0.2, 0, r);
+    } else if (kind === 5) {
+      ctx.moveTo(0, -r);
+      ctx.bezierCurveTo(r * 1.7, r * 0.7, r * 0.7, r * 1.4, 0, r);
+      ctx.bezierCurveTo(-r * 0.7, r * 1.4, -r * 1.7, r * 0.7, 0, -r);
+    } else if (kind === 0) {
+      ctx.moveTo(0, -r);
+      ctx.lineTo(r, 0);
+      ctx.lineTo(0, r);
+      ctx.lineTo(-r, 0);
+    } else {
+      ctx.moveTo(0, -r);
+      ctx.lineTo(r * 0.8, -r * 0.4);
+      ctx.lineTo(r * 0.8, r * 0.45);
+      ctx.lineTo(0, r);
+      ctx.lineTo(-r * 0.8, r * 0.45);
+      ctx.lineTo(-r * 0.8, -r * 0.4);
+    }
     ctx.closePath();
     ctx.fill();
+    ctx.save();
+    ctx.clip();
     ctx.strokeStyle = '#ffffffaa';
     ctx.lineWidth = 0.012;
     ctx.stroke();
@@ -62,13 +85,20 @@ export function drawDecoration(ctx: CanvasRenderingContext2D, d: Decoration, asp
     ctx.lineTo(-r * 0.3, r * 0.3);
     ctx.closePath();
     ctx.fill();
+    const shine = ctx.createRadialGradient(-r * 0.35, -r * 0.35, 0, 0, 0, r);
+    shine.addColorStop(0, '#ffffffc0');
+    shine.addColorStop(0.4, '#ffffff18');
+    shine.addColorStop(1, '#39245e50');
+    ctx.fillStyle = shine;
+    ctx.fillRect(-r, -r, r * 2, r * 2);
+    ctx.restore();
   }
   ctx.restore();
 }
-function pattern(ctx: CanvasRenderingContext2D, id: string) {
+function pattern(ctx: CanvasRenderingContext2D, id: string, colorId?: string | null) {
   const kind = Number(id.split('-')[1]);
-  ctx.fillStyle = '#ffffffbb';
-  ctx.strokeStyle = '#ffffffbb';
+  ctx.fillStyle = colorId ? colorOf(colorId) : '#ffffffbb';
+  ctx.strokeStyle = ctx.fillStyle;
   ctx.lineWidth = 0.025;
   if (kind === 4) {
     ctx.fillRect(0, 0, 1, 0.2);
@@ -95,9 +125,18 @@ function pattern(ctx: CanvasRenderingContext2D, id: string) {
       const x = 0.12 + col * 0.19 + (row % 2) * 0.06,
         y = 0.12 + row * 0.13;
       if (kind === 2 || kind === 7 || kind === 9)
-        drawIcon(ctx, kind === 2 ? 'heart' : kind === 7 ? 'sticker-2' : 'star', x, y, 0.075);
+        drawIcon(
+          ctx,
+          kind === 2 ? 'heart' : kind === 7 ? 'sticker-2' : 'star',
+          x,
+          y,
+          0.075,
+          colorId ? colorOf(colorId) : undefined,
+        );
       else if (kind === 8) {
-        ctx.fillStyle = ['#ffe784', '#ffc5d8', '#c5ecdd'][(row + col) % 3];
+        ctx.fillStyle = colorId
+          ? colorOf(colorId)
+          : ['#ffe784', '#ffc5d8', '#c5ecdd'][(row + col) % 3];
         ctx.fillRect(x, y, 0.035, 0.065);
       } else {
         ctx.beginPath();
@@ -121,18 +160,26 @@ export function renderNail(
   ctx.clip(outline);
   ctx.fillStyle = '#fff4e8';
   ctx.fillRect(0, 0, 1, 1);
-  // Erasing restores the natural nail within the clipped artwork layer.
-  if (nail.fillColorId) {
-    ctx.fillStyle = colorOf(nail.fillColorId);
-    ctx.fillRect(0, 0, 1, 1);
-  }
   // Stroke width is measured against nail width. Use uniform scaling for the
   // brush so round taps and caps match the circular cursor on tall nails too.
+  // Create fill and stroke materials in this same space to align their textures.
   ctx.save();
   const aspect = width / height;
   ctx.scale(1, aspect);
+  const paints = new Map<string, string | CanvasGradient | CanvasPattern>();
+  if (nail.fillColorId) {
+    const paint = polishPaint(ctx, colorOf(nail.fillColorId), nail.finish);
+    paints.set(nail.fillColorId, paint);
+    ctx.fillStyle = paint;
+    ctx.fillRect(0, 0, 1, 1 / aspect);
+  }
   for (const s of nail.strokes) {
-    ctx.strokeStyle = s.erase ? '#fff4e8' : colorOf(s.colorId);
+    let paint = paints.get(s.colorId);
+    if (!s.erase && !paint) {
+      paint = polishPaint(ctx, colorOf(s.colorId), nail.finish);
+      paints.set(s.colorId, paint);
+    }
+    ctx.strokeStyle = s.erase ? '#fff4e8' : paint!;
     ctx.fillStyle = ctx.strokeStyle;
     ctx.lineWidth = s.width;
     ctx.lineCap = 'round';
@@ -149,7 +196,7 @@ export function renderNail(
     }
   }
   ctx.restore();
-  if (nail.patternId) pattern(ctx, nail.patternId);
+  if (nail.patternId) pattern(ctx, nail.patternId, nail.patternColorId);
   for (const d of nail.decorations) drawDecoration(ctx, d, width / height);
   if (!nail.cleaned && !nail.baseColorId && nail.strokes.length === 0) {
     ctx.fillStyle = '#bc927966';
@@ -237,7 +284,7 @@ export async function exportManicure(m: Manicure): Promise<Blob> {
   ctx.fill(new Path2D(HAND_PATH));
   ctx.stroke(new Path2D(HAND_PATH));
   m.nails.forEach((n, i) => {
-    const b = NAIL_BOXES[i];
+    const b = lengthBox(NAIL_BOXES[i], n.length);
     const tile = document.createElement('canvas');
     tile.width = 240;
     tile.height = Math.round((240 * b.h) / b.w);

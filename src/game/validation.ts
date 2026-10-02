@@ -10,6 +10,13 @@ function nail(v: unknown): boolean {
   if (
     !object(v) ||
     !id(v.shape, SHAPES) ||
+    (v.length !== undefined &&
+      (typeof v.length !== 'string' || !['short', 'medium', 'long'].includes(v.length))) ||
+    (v.finish !== undefined &&
+      (typeof v.finish !== 'string' || !['glossy', 'glitter', 'pearl'].includes(v.finish))) ||
+    (v.patternColorId !== undefined &&
+      v.patternColorId !== null &&
+      !id(v.patternColorId, COLORS)) ||
     typeof v.cleaned !== 'boolean' ||
     (v.baseColorId !== null && !id(v.baseColorId, COLORS)) ||
     (v.fillColorId !== null && !id(v.fillColorId, COLORS)) ||

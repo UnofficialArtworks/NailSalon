@@ -1,4 +1,6 @@
 export type Shape = 'round' | 'oval' | 'square' | 'soft-square' | 'almond';
+export type NailLength = 'short' | 'medium' | 'long';
+export type Finish = 'glossy' | 'glitter' | 'pearl';
 export type Tool = 'clean' | 'brush' | 'eraser' | 'pattern' | 'sticker' | 'gem' | 'move';
 export interface Point {
   x: number;
@@ -20,6 +22,10 @@ export interface Decoration extends Point {
 }
 export interface Nail {
   shape: Shape;
+  /** Missing optional fields preserve the appearance of first-release saves. */
+  length?: NailLength;
+  finish?: Finish;
+  patternColorId?: string | null;
   cleaned: boolean;
   baseColorId: string | null;
   fillColorId: string | null;
