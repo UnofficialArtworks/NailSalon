@@ -120,6 +120,9 @@ test('collection filters retain an All supplies view and respect locked supplies
 test('material rendering is deterministic and leaves bare and erased areas natural', async ({
   page,
 }) => {
+  page.on('console', (message) => {
+    if (message.text().startsWith('Matte ')) console.log(message.text());
+  });
   await page.goto('/');
   const result = await page.evaluate(async (path) => {
     const { renderNail } = await import(path);

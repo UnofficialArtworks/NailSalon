@@ -131,6 +131,17 @@ export function nailShine(
   // coordinates. This preserves bare pixels exactly across WebKit platforms.
   const coverage = mc.getImageData(0, 0, width, height).data;
   const after = ctx.getImageData(0, 0, width, height);
+  if (import.meta.env.DEV && nail.fillColorId) {
+    const center = (Math.floor(height / 2) * width + Math.floor(width / 2)) * 4;
+    console.debug(
+      'Matte snapshot:',
+      JSON.stringify({
+        before: [...before.data.slice(center, center + 4)],
+        after: [...after.data.slice(center, center + 4)],
+        mask: [...coverage.slice(center, center + 4)],
+      }),
+    );
+  }
   for (let i = 0; i < coverage.length; i += 4) {
     const amount = coverage[i] / 255;
     if (!amount) continue;
@@ -140,5 +151,13 @@ export function nailShine(
       );
   }
   ctx.putImageData(after, 0, 0);
+  if (import.meta.env.DEV && nail.fillColorId) {
+    console.debug(
+      'Matte result:',
+      JSON.stringify([
+        ...ctx.getImageData(Math.floor(width / 2), Math.floor(height / 2), 1, 1).data,
+      ]),
+    );
+  }
 }
 let matteMask: HTMLCanvasElement | undefined;
